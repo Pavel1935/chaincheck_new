@@ -1,0 +1,71 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE / editor folders
+.idea/
+.vscode/
+*.swp
+
+# Pytest / test cache
+.pytest_cache/
+.cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# JUnit XML test results
+junit-*.xml
+test-results/
+
+# Logs and debug
+*.log
+*.tmp
+*.bak
+*.orig
+*.DS_Store
+
+# MyPy / Pylint / Bandit / Pyre
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pylint.d/
+
+# Playwright specific
+playwright-report/
+test-results/
+trace.zip
+*.zip
+*.webm
+*.png
+
+# Local secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# Docker
+*.pid
+*.pid.lock
+
+# macOS
+.DS_Store
