@@ -7,7 +7,6 @@ import random
 import string
 
 
-
 @pytest.fixture
 def access_token():
     endpoint = "/auth/refresh-token"
@@ -18,13 +17,14 @@ def access_token():
     }
 
     response = requests.post(url, cookies=cookies)
-    token = response.json()
+    response.raise_for_status()  # чтобы сразу получить исключение при 4xx/5xx
 
-    assert token["ok"] == 1
-    assert "access_token" in token
-    print("ACCESS TOKEN:", token["access_token"])
+    token_data = response.json()
 
-    return token["access_token"]
+    assert "access-token" in token_data, "access-token не найден в ответе"
+
+    print("ACCESS TOKEN:", token_data["access-token"])
+    return token_data["access-token"]
 
 
 @pytest.fixture

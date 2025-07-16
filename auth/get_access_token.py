@@ -18,3 +18,4 @@ class TestGetAccessToken:
         data = response.json()
 
         assert data["ok"] == 1
+

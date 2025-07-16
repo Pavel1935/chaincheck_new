@@ -11,7 +11,7 @@ class TestVerifyEmail:
 
         body = {
             "email": Constants.EMAIL,
-            "code": "164806"
+            "code": "445461"
         }
 
         response = requests.post(url, json=body)

@@ -2,11 +2,11 @@ import requests
 from Constants import Constants
 
 
+class TestPackageList:
+    def test_package_list(self):
 
-class TestAmlGetNetworks:
-    def test_aml_get_networks(self):
+        url = Constants.API_URL + "/package/list"
 
-        url = Constants.API_URL + "/aml/networks"
 
         headers = {'Authorization': 'Bearer ' + Constants.TOKEN}
 
@@ -16,5 +16,4 @@ class TestAmlGetNetworks:
         data = response.json()
 
         assert data["ok"] == 1
-        assert data["items"]
-
+        assert "items" in data

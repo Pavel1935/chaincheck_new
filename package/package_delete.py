@@ -4,17 +4,15 @@ from Constants import Constants
 
 class TestPackageDelete:
     def test_package_delete(self):
-
-        url = Constants.API_URL + "/package"
-
-        params = "19a4d297-d356-4fcc-ad57-057b74434f21"
+        package_id = "095a5476-2e17-4677-a91b-06be1e336949"
+        url = Constants.API_URL + "/package/" + package_id
 
         payload = {
         }
 
         headers = {'Authorization': 'Bearer ' + Constants.TOKEN}
 
-        response = requests.delete(url, headers=headers, params=params, json=payload)
+        response = requests.delete(url, headers=headers, json=payload)
         print("RESPONSE TEXT:", response.text)
 
         data = response.json()

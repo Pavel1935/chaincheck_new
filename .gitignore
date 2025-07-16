@@ -16,6 +16,7 @@ ENV/
 .idea/
 .vscode/
 *.swp
+*.pyc
 
 # Pytest / test cache
 .pytest_cache/
