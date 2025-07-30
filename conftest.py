@@ -2,22 +2,22 @@ import pytest
 import requests
 from Constants import Constants
 import time
-import re
-import random
-import string
+from redis_utils import get_verification_code
+
 
 
 @pytest.fixture
 def access_token():
     endpoint = "/auth/refresh-token"
-    url = Constants.API_URL + endpoint
 
-    cookies = {
-        "refresh_token": Constants.REFRESH_TOKEN
+    url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
+
+    payload = ""
+    headers = {
+        'Cookie': 'refresh_token=01985bec-64b6-72ea-9c88-344a7ca3fcc2'
     }
 
-    response = requests.post(url, cookies=cookies)
-    response.raise_for_status()  # чтобы сразу получить исключение при 4xx/5xx
+    response = requests.post(url, headers=headers, data=payload)
 
     token_data = response.json()
 
@@ -48,50 +48,51 @@ def report_id():
     return data["result"]["report_id"]  # 💡 вернёт report_id из ответа
 
 
-# def generate_email():
-#     login = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
-#     domain = "1secmail.com"
-#     return login, domain, f"{login}@{domain}"
-#
-#
-# def fetch_verification_code(login, domain):
-#     base_url = "https://www.1secmail.com/api/v1/"
-#
-#     for _ in range(10):
-#         resp = requests.get(base_url, params={
-#             "action": "getMessages",
-#             "login": login,
-#             "domain": domain
-#         })
-#
-#         messages = resp.json()
-#         if messages:
-#             msg_id = messages[0]["id"]
-#             msg = requests.get(base_url, params={
-#                 "action": "readMessage",
-#                 "login": login,
-#                 "domain": domain,
-#                 "id": msg_id
-#             }).json()
-#
-#             body = msg.get("textBody", "")
-#             match = re.search(r"\b\d{6}\b", body)
-#             if match:
-#                 return match.group(0)
-#
-#         time.sleep(3)
-#
-#     return None
-#
-#
+
 # @pytest.fixture(scope="session")
 # def verification_code():
-#     login, domain, email = generate_email()
-#     print(f"📧 Generated temp email: {email}")
-#
-#     # 👉 отправь на него письмо в тесте логина (отдельно)
-#
-#     code = fetch_verification_code(login, domain)
-#     print(f"📩 Received verification code: {code}")
-#
-#     return email, code
+#     code = get_verification_code()
+#     print(f"[Fixture] Verification code: {code}")
+#     return code
+
+@pytest.fixture(scope="session")
+def tokens():
+    login_url = Constants.API_URL + "/auth/login"
+
+    payload = {
+        "email": Constants.EMAIL
+    }
+
+    login_response = requests.post(login_url, json=payload)
+    login_response.raise_for_status()
+    print("[LOGIN] RESPONSE:", login_response.text)
+
+    # 🔽 КОД ПОЛУЧАЕМ ТЕПЕРЬ — ПОСЛЕ login
+    from redis_utils import get_verification_code
+    code = get_verification_code()
+    print(f"[Verification code] Received: {code}")
+
+    # verify
+    verify_url = Constants.API_URL + "/auth/verify-email"
+    body = {
+        "email": Constants.EMAIL,
+        "code": code
+    }
+
+    verify_response = requests.post(verify_url, json=body)
+    verify_response.raise_for_status()
+    print("[VERIFY] RESPONSE:", verify_response.text)
+
+    data = verify_response.json()
+    assert data.get("ok") == 1, f"Verify failed: {data}"
+
+    access_token = data.get("access-token")
+    refresh_token = verify_response.cookies.get("refresh_token")
+
+    print(f"[TOKENS] Access: {access_token}")
+    print(f"[TOKENS] Refresh: {refresh_token}")
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }

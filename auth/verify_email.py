@@ -1,21 +1,22 @@
 import pytest
 import requests
 from Constants import Constants
-from conftest import generate_email, verification_code
+from conftest import verification_code
 
 class TestVerifyEmail:
-    def test_verify_email(self):
+    def test_verify_email(self, verification_code):
 
-        endpoint = "/Auth/verify-email"
+        endpoint = "/auth/verify-email"
         url = Constants.API_URL + endpoint
 
         body = {
             "email": Constants.EMAIL,
-            "code": "445461"
+            "code": verification_code
         }
 
         response = requests.post(url, json=body)
         print("RESPONSE TEXT:", response.text)
 
         data = response.json()
+
         assert data["ok"] == 1

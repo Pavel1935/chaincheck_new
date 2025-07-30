@@ -5,13 +5,16 @@ class TestGetAccessToken:
 
     def test_get_access_token(self):
 
-        url = Constants.API_URL + "/auth/refresh-token"
+        url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
 
-        cookies = {
-            "refresh_token": Constants.REFRESH_TOKEN
+        payload = ""
+        headers = {
+            'Cookie': 'refresh_token=01985bec-64b6-72ea-9c88-344a7ca3fcc2'
         }
 
-        response = requests.post(url, cookies=cookies)
+        response = requests.post(url, headers=headers, data=payload)
+
+        # response = requests.post(url)
 
         print("RESPONSE TEXT:", response.text)
 
