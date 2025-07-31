@@ -49,11 +49,11 @@ def report_id():
 
 
 
-# @pytest.fixture(scope="session")
-# def verification_code():
-#     code = get_verification_code()
-#     print(f"[Fixture] Verification code: {code}")
-#     return code
+@pytest.fixture(scope="session")
+def verification_code_fixture():
+    code = get_verification_code()
+    print(f"[Fixture] Verification code: {code}")
+    return code
 
 @pytest.fixture(scope="session")
 def tokens():
