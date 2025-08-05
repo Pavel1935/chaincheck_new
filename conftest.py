@@ -111,15 +111,15 @@ def get_access_token(refresh_token):
 
 
 @pytest.fixture
-def report_id():
+def report_id(tokens):
 
     url = Constants.API_URL + "aml/check"
-
+    access_token = tokens["access_token"]
     payload = {
         "wallet": "0x1234567890abcdef1234567890abcdef12345678",
         "network": "bsc"
     }
-    headers = {'Authorization': 'Bearer ' + Constants.TOKEN}
+    headers = {'Authorization': 'Bearer ' + access_token}
 
     response = requests.post(url, headers=headers, json=payload)
     print("RESPONSE TEXT:", response.text)

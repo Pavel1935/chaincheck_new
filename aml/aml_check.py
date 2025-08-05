@@ -1,27 +1,86 @@
 import requests
 from Constants import Constants
-from conftest import get_access_token
+from conftest import tokens
 
 
 class TestAmlCheck:
-    def test_aml_check(self, get_access_token):
-
+    def test_aml_check(self, tokens):
         url = Constants.API_URL + "aml/check"
 
         payload = {
-              "wallet": "0x1234567890abcdef1234567890abcdef12345678",
-              "network": "bsc"
-            }
+            "wallet": "0x1234567890abcdef1234567890abcdef12345678",
+            "network": "bsc"
+        }
 
-        headers = {'Authorization': 'Bearer ' + access_token}
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': f'Bearer {access_token}'}
 
         response = requests.post(url, headers=headers, json=payload)
         print("RESPONSE TEXT:", response.text)
 
         data = response.json()
         assert data["ok"] == 1
+        assert data["result"]["report_id"]
 
-    def test_aml_check_organization(self, access_token):
+    def test_aml_check_tron(self, tokens):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "TFazJsQKQd8J1ryoogBnH6kkwm951rscHa",
+            "network": "tron"
+        }
+
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url, headers=headers, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 1
+        assert data["result"]["report_id"]
+
+    def test_aml_check_btc(self, tokens):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "bc1q29k0jkvpekcuv6dwchjww8pev92gsxe9uw24wz",
+            "network": "btc"
+        }
+
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url, headers=headers, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 1
+        assert data["result"]["report_id"]
+
+    def test_aml_check_incorrect_network(self, tokens):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "bc1q29k0jkvpekcuv6dwchjww8pev92gsxe9uw24wz",
+            "network": "tron"
+        }
+
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url, headers=headers, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "INVALID_ADDRESS"
+
+    def test_aml_check_organization(self, tokens):
 
         url = Constants.API_URL + "aml/check"
 
@@ -29,10 +88,158 @@ class TestAmlCheck:
               "wallet": "0xE3e1147acD39687A25cA7716227c604500f5c31A",
               "network": "bsc"
             }
-        headers = {'Authorization': 'Bearer ' + access_token}
+        access_token = tokens["access_token"]
+        headers = {'Authorization': f'Bearer {access_token}'}
 
         response = requests.post(url, headers=headers, json=payload)
         print("RESPONSE TEXT:", response.text)
 
         data = response.json()
         assert data["ok"] == 1
+        assert data["result"]["report_id"]
+
+    def test_aml_check_invalid__data_wallet(self, tokens):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "0xE3e1147acD39687A25cA7716227c604500f5c31Akjg;jr",
+            "network": "bsc"
+        }
+        access_token = tokens["access_token"]
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url, headers=headers, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "INVALID_ADDRESS"
+
+    def test_aml_check_invalid_data_network(self, tokens):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "0x1234567890gwrgwrtabcdef1234567890abcdef12345678",
+            "network": "123"
+        }
+
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url, headers=headers, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "INVALID_NETWORK"
+
+
+    def test_aml_check_invalid_network_and_wallet(self, tokens):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "0x1234ergege567890gwrgwrtabcdef1234567890abcdef12345678",
+            "network": "123"
+        }
+
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url, headers=headers, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "INVALID_NETWORK"
+
+    def test_aml_check_invalid_access_token(self):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "0x1234567890abcdef1234567890abcdef12345678",
+            "network": "bsc"
+        }
+        # access_token = tokens["access_token"]
+        headers = {'Authorization': f'Bearer "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhbWwtYmFja2VuZC1nYXRld2F5Iiwic3ViIjoiMDE5MDEwYjQtYTVmZS03MmYzLTllYjUtM2E4NDg2YjY1ODY1IiwiYXVkIjpbImFtbC1iYWNrZW5kLWdhdGV3YXktdXNlcnMiXSwiZXhwIjoxNzU0NDY3MDU2LCJuYmYiOjE3NTQzODA2NTYsImlhdCI6MTc1NDM4MDY1NiwiZmluZ2VycHJpbnQiOiJJTTA4Z1NyK3FhbnJDVkhMc2FnV1RBbnoxVlZ4NFVTVmxibDBnT2M2cldNPSIsInVzZXJfcm9sZSI6M30.2K58QMW5j7mYCG2l7EwJn-hiG-2twPUck7RNMo5YGzk'}
+        response = requests.post(url, headers=headers, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "UNAUTHORIZED"
+
+    def test_aml_check_without_access_token(self):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "0x1234567890abcdef1234567890abcdef12345678",
+            "network": "bsc"
+        }
+        # access_token = tokens["access_token"]
+        headers = {'Authorization': f'Bearer ""'}
+        response = requests.post(url, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "UNAUTHORIZED"
+
+    def test_aml_check_without_wallet(self, tokens):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            # "wallet": "0x1234567890abcdef1234567890abcdef12345678",
+            "network": "bsc"
+        }
+
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url, headers=headers, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "BAD_REQUEST"
+
+    def test_aml_check_invalid_network(self, tokens):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "0x1234567890abcdef1234567890abcdef12345678",
+            "netqwork": "bsc"
+        }
+
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url, headers=headers, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "BAD_REQUEST"
+
+    def test_aml_check_without_payload(self, tokens):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "0x1234567890abcdef1234567890abcdef12345678",
+            "netqwork": "bsc"
+        }
+
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url, headers=headers)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "BAD_REQUEST"
+
