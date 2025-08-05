@@ -1,20 +1,19 @@
 import requests
 from Constants import Constants
+from conftest import refresh_token_only
 
 class TestGetAccessToken:
 
-    def test_get_access_token(self):
+    def test_get_access_token(self, refresh_token_only):
 
         url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
 
         payload = ""
         headers = {
-            'Cookie': 'refresh_token=01985bec-64b6-72ea-9c88-344a7ca3fcc2'
+            'Cookie': f'refresh_token={refresh_token_only}'
         }
 
         response = requests.post(url, headers=headers, data=payload)
-
-        # response = requests.post(url)
 
         print("RESPONSE TEXT:", response.text)
 
@@ -22,8 +21,7 @@ class TestGetAccessToken:
 
         assert data["ok"] == 1
 
-
-    def test_get_access_token_invalid_refresh(self):
+    def test_get_access_token_invalid_refresh(self, refresh_token_only):
 
         url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
 
