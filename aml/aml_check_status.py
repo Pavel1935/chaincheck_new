@@ -67,5 +67,5 @@ class TestAmlCheckStatus:
 
         data = response.json()
         assert data["ok"] == 0
-        assert data["result"] == "BAD_REQUEST"
+        assert data["error"] == "BAD_REQUEST"
 
