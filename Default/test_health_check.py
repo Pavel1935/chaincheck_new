@@ -6,7 +6,9 @@ class TestHealthCheck:
 
     def test_health_check(self):
 
-        response = requests.get(Constants.API_URL + "health-check")
+        url = Constants.API_URL + "/aml/share/link"
+
+        response = requests.get(url)
         print("RESPONSE TEXT:", response.text)
 
         assert response.status_code == 200

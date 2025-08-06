@@ -1,15 +1,25 @@
+import pytest
 import requests
 from Constants import Constants
 from conftest import tokens
 
 
 class TestAmlCheck:
-    def test_aml_check(self, tokens):
+    @pytest.mark.parametrize(
+        "network,wallet",
+        [
+            ("btc", "bc1q29k0jkvpekcuv6dwchjww8pev92gsxe9uw24wz"),
+            ("bsc", "0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f"),
+            ("ether", "0xDC60CF09199b3ccdbD9d9f6920829d5496FC3d04"),
+            ("tron", "TFazJsQKQd8J1ryoogBnH6kkwm951rscHa"),
+        ]
+    )
+    def test_aml_check(self, tokens, network, wallet):
         url = Constants.API_URL + "aml/check"
 
         payload = {
-            "wallet": "0x1234567890abcdef1234567890abcdef12345678",
-            "network": "bsc"
+            "wallet": wallet,
+            "network": network
         }
 
         access_token = tokens["access_token"]
@@ -226,11 +236,6 @@ class TestAmlCheck:
 
     def test_aml_check_without_payload(self, tokens):
         url = Constants.API_URL + "aml/check"
-
-        payload = {
-            "wallet": "0x1234567890abcdef1234567890abcdef12345678",
-            "netqwork": "bsc"
-        }
 
         access_token = tokens["access_token"]
 

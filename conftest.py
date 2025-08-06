@@ -88,27 +88,6 @@ def refresh_token():
     return refresh_token
 
 
-@pytest.fixture(scope="session")
-def access_token_only(tokens):
-    return tokens["access_token"]
-
-@pytest.fixture
-def get_access_token(refresh_token):
-    url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
-
-    payload = ""
-    headers = {
-        'Cookie': f'refresh_token={refresh_token}'
-    }
-
-    response = requests.post(url, headers=headers, data=payload)
-
-    print("RESPONSE TEXT:", response.text)
-
-    data = response.json()
-
-    return data["access-token"]
-
 
 @pytest.fixture
 def report_id(tokens):
@@ -116,8 +95,8 @@ def report_id(tokens):
     url = Constants.API_URL + "aml/check"
     access_token = tokens["access_token"]
     payload = {
-        "wallet": "0x1234567890abcdef1234567890abcdef12345678",
-        "network": "bsc"
+        "wallet": "bc1q29k0jkvpekcuv6dwchjww8pev92gsxe9uw24wz",
+        "network": "btc"
     }
     headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -136,5 +115,26 @@ def verification_code_fixture():
     code = get_verification_code()
     print(f"[Fixture] Verification code: {code}")
     return code
+
+# @pytest.fixture
+# def get_access_token(refresh_token):
+#     url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
+#
+#     payload = ""
+#     headers = {
+#         'Cookie': f'refresh_token={refresh_token}'
+#     }
+#
+#     response = requests.post(url, headers=headers, data=payload)
+#
+#     print("RESPONSE TEXT:", response.text)
+#
+#     data = response.json()
+#
+#     return data["access-token"]
+
+# @pytest.fixture(scope="session")
+# def access_token_only(tokens):
+#     return tokens["access_token"]
 
 
