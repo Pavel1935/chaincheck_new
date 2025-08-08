@@ -1,12 +1,13 @@
 import requests
-from Constants import Constants
-from conftest import refresh_token
+from conftest import tokens
 
 class TestGetAccessToken:
 
-    def test_get_access_token(self, refresh_token):
+    def test_get_access_token(self, tokens):
 
         url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
+        refresh_token = tokens["refresh_token"]
+
 
         payload = ""
         headers = {

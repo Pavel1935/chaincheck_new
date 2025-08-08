@@ -15,3 +15,4 @@ class TestPackageList:
 
         assert data["ok"] == 1
         assert "result" in data
+
