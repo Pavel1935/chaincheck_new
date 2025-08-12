@@ -5,7 +5,6 @@ import time
 from redis_utils import get_verification_code
 
 
-
 @pytest.fixture(scope="session")
 def tokens():
     login_url = Constants.API_URL + "/auth/login"
@@ -48,6 +47,7 @@ def tokens():
         "refresh_token": refresh_token
     }
 
+
 @pytest.fixture
 def get_access_token(tokens):
     url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
@@ -65,10 +65,6 @@ def get_access_token(tokens):
     data = response.json()
 
     return data["access-token"]
-
-    @pytest.fixture(scope="session")
-    def access_token_only(tokens):
-        return tokens["access_token"]
 
 
 @pytest.fixture
@@ -91,6 +87,26 @@ def report_id(tokens):
 
     return data["result"]["report_id"]
 
+# @pytest.fixture
+# def report_id_check_risk_score(tokens):
+#
+#     url = Constants.API_URL + "aml/check"
+#     access_token = tokens["access_token"]
+#     payload = {
+#         "wallet": "bc1q29k0jkvpekcuv6dwchjww8pev92gsxe9uw24wz",
+#         "network": "btc"
+#     }
+#     headers = {'Authorization': 'Bearer ' + access_token}
+#
+#     response = requests.post(url, headers=headers, json=payload)
+#     print("RESPONSE TEXT:", response.text)
+#
+#     data = response.json()
+#     assert data["ok"] == 1
+#     time.sleep(1)
+#
+#     return data["result"]["report_id"]
+#
 
 @pytest.fixture(scope="session")
 def verification_code_fixture():

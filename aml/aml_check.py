@@ -38,7 +38,7 @@ class TestAmlCheck:
         url = Constants.API_URL + "aml/check"
 
         payload = {
-            "wallet": "0xeA7159fac1C4B6CF021EC19042fA1D6704fB4E95",
+            "wallet": "0x489A8756C18C0b8B24EC2a2b9FF3D4d447F79BEc",
             "network": "ether"
         }
 
