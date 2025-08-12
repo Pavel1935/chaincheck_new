@@ -34,6 +34,24 @@ class TestAmlCheck:
         assert data["ok"] == 1
         assert data["result"]["report_id"]
 
+    def test_aml_check_blacklist_risk(self, tokens):
+        url = Constants.API_URL + "aml/check"
+
+        payload = {
+            "wallet": "0xeA7159fac1C4B6CF021EC19042fA1D6704fB4E95",
+            "network": "ether"
+        }
+
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.post(url, headers=headers, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 1
+        assert data["result"]["report_id"]
 
     def test_aml_check_tron(self, tokens):
         url = Constants.API_URL + "aml/check"

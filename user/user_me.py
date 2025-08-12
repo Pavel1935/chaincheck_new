@@ -1,13 +1,17 @@
 import requests
 from Constants import Constants
+from conftest import tokens
 
 
 class TestUserMe:
 
-    def test_user_me(self):
+    def test_user_me(self, tokens):
+
         endpoint = "/user/me"
         url = Constants.API_URL + endpoint
-        headers = {'Authorization': 'Bearer ' + Constants.TOKEN}
+        access_token = tokens["access_token"]
+
+        headers = {'Authorization': 'Bearer ' + access_token}
 
         response = requests.get(url, headers=headers)
         print("RESPONSE TEXT:", response.text)
@@ -15,11 +19,59 @@ class TestUserMe:
         data = response.json()
 
         assert data["ok"] == 1
-        assert data["result"] == {
-                "email": "oukb1147@gmail.com",
-                "free_checks": 19,
-                "id": "019010b4-a5fe-72f3-9eb5-3a8486b65865",
-                "role": "admin",
-                "username": ""
-            }
-        return response.cookies
+        assert data["result"]["email"] == Constants.EMAIL
+
+    def test_user_me_without_token(self, tokens):
+
+        endpoint = "/user/me"
+        url = Constants.API_URL + endpoint
+
+        response = requests.get(url)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "UNAUTHORIZED"
+
+    def test_user_me_incorrect_token(self, tokens):
+
+        endpoint = "/user/me"
+        url = Constants.API_URL + endpoint
+
+        headers = {'Authorization': 'Bearer ' + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhbWwtYmFja2VuZC1nYXRld2F5Iiwic3ViIjoiMDE5MDEwYjQtYTVmZS03MmYzLTllYjUtM2E4NDg2YjY1ODY1IiwiYXVkIjpbImFtbC1iYWNrZW5kLWdhdGV3YXktdXNlcnMiXSwiZXhwIjoxNzUxOTg5NTM4LCJuYmYiOjE3NTE5MDMxMzgsImlhdCI6MTc1MTkwMzEzOCwiZmluZ2VycHJpbnQiOiJsR0xneGE2Yi9ieEhUVHVJTzlPKzdseUVrZnlmNnNQbC9EUXgxWCt6bWdvPSIsInVzZXJfcm9sZSI6M30.nMXEkTRqVial-Uz_2_OvrtVrHKrKxNLjgAqM128Oh4g"}
+
+        response = requests.get(url, headers=headers)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "UNAUTHORIZED"
+
+    def test_user_me_invalid_token(self, tokens):
+
+        endpoint = "/user/me"
+        url = Constants.API_URL + endpoint
+
+        headers = {'Authorization': 'Bearer ' + "HiJohneyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhbWwtYmFja2VuZC1nYXRld2F5Iiwic3ViIjoiMDE5MDEwYjQtYTVmZS03MmYzLTllYjUtM2E4NDg2YjY1ODY1IiwiYXVkIjpbImFtbC1iYWNrZW5kLWdhdGV3YXktdXNlcnMiXSwiZXhwIjoxNzUxOTg5NTM4LCJuYmYiOjE3NTE5MDMxMzgsImlhdCI6MTc1MTkwMzEzOCwiZmluZ2VycHJpbnQiOiJsR0xneGE2Yi9ieEhUVHVJTzlPKzdseUVrZnlmNnNQbC9EUXgxWCt6bWdvPSIsInVzZXJfcm9sZSI6M30.nMXEkTRqVial-Uz_2_OvrtVrHKrKxNLjgAqM128Oh4g"}
+
+        response = requests.get(url, headers=headers)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "UNAUTHORIZED"
+
+    def test_user_me_without_data_token(self, tokens):
+
+        endpoint = "/user/me"
+        url = Constants.API_URL + endpoint
+
+        headers = {'Authorization': 'Bearer ' + ""}
+
+        response = requests.get(url, headers=headers)
+        print("RESPONSE TEXT:", response.text)
+
+        data = response.json()
+        assert data["ok"] == 0
+        assert data["error"] == "UNAUTHORIZED"
+

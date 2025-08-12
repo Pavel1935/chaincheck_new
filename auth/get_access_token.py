@@ -8,7 +8,6 @@ class TestGetAccessToken:
         url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
         refresh_token = tokens["refresh_token"]
 
-
         payload = ""
         headers = {
             'Cookie': f'refresh_token={refresh_token}'
