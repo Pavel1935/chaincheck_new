@@ -1,12 +1,11 @@
-from tkinter.font import ITALIC, BOLD
-
 import requests
-from pygments.styles.paraiso_dark import GREEN, BLUE
-
 from Constants import Constants
 from conftest import report_id
 from conftest import tokens
-from test.check_score import RESET, ORANGE, RED
+from test.check_score_1 import RESET
+
+RESET="\033[0m"; BOLD="\033[1m"; ITALIC="\033[3m"
+GREEN="\033[32m"; BLUE="\033[34m"; ORANGE="\033[33m"; RED="\033[31m";YELLOW = "\033[93m"
 
 
 class TestAmlCheckHistoryOne:
@@ -18,24 +17,26 @@ class TestAmlCheckHistoryOne:
         headers = {'Authorization': 'Bearer ' + access_token}
 
         payload = {
-                "report_id": "7e3f19ad-de15-46a0-ad8e-dc76b4fa0466"
+                "report_id": report_id
         }
 
         response = requests.post(url, headers=headers, json=payload)
         print("RESPONSE TEXT:", response.text)
 
-        score = response.json()
-        if score <= 39:
-            print(f"{BOLD}{ITALIC}{GREEN}Низкий риск{RESET}")
-        elif 40 <= score <= 59:
-            print(f"{BOLD}{ITALIC}{BLUE}Умеренный риск{RESET}")
-        elif 60 <= score <= 79:
-            print(f"{BOLD}{ITALIC}{ORANGE}Высокий риск{RESET}")
-        elif score >= 80:
-            print(f"{BOLD}{ITALIC}{RED}Критический риск{RESET}")
+        data = response.json()
+        assert data["ok"] == 1
+        risk_score = data["result"].get("risk_score")
 
-        assert score["ok"] == 1
-        assert score["result"]["id"]
+        if risk_score <= 19:
+            print(f"{BOLD}{ITALIC}{GREEN}Низкий риск{RESET}")
+        elif risk_score <= 39:
+            print(f"{BOLD}{ITALIC}{BLUE}Умеренный риск{RESET}")
+        elif risk_score <= 59:
+            print(f"{BOLD}{ITALIC}{ORANGE}Средний риск{RESET}")
+        elif risk_score <= 79:
+            print(f"{BOLD}{ITALIC}{YELLOW}Высокий риск{RESET}")
+        else:
+            print(f"{BOLD}{ITALIC}{RED}Критический риск{RESET}")
 
     def test_aml_check_history_one_incorrect_report_id(self, tokens, report_id):
 
