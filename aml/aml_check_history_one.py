@@ -2,7 +2,7 @@ import requests
 from Constants import Constants
 from conftest import report_id
 from conftest import tokens
-from test.check_score_1 import RESET
+from test.test_risk_score_1 import RESET
 
 RESET="\033[0m"; BOLD="\033[1m"; ITALIC="\033[3m"
 GREEN="\033[32m"; BLUE="\033[34m"; ORANGE="\033[33m"; RED="\033[31m";YELLOW = "\033[93m"
@@ -17,7 +17,7 @@ class TestAmlCheckHistoryOne:
         headers = {'Authorization': 'Bearer ' + access_token}
 
         payload = {
-                "report_id": report_id
+                "report_id": "85541086-dc40-4842-bd8d-28e836839a73"
         }
 
         response = requests.post(url, headers=headers, json=payload)

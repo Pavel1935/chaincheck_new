@@ -2,7 +2,7 @@ import time
 import requests
 from Constants import Constants
 from conftest import tokens
-from test.check_score_1 import RESET
+from test.test_risk_score_1 import RESET
 
 RESET="\033[0m"; BOLD="\033[1m"; ITALIC="\033[3m"
 GREEN="\033[32m"; BLUE="\033[34m"; ORANGE="\033[33m"; RED="\033[31m";YELLOW = "\033[93m"

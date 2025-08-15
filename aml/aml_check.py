@@ -38,8 +38,8 @@ class TestAmlCheck:
         url = Constants.API_URL + "aml/check"
 
         payload = {
-            "wallet": "0x489A8756C18C0b8B24EC2a2b9FF3D4d447F79BEc",
-            "network": "ether"
+            "wallet": "bc1ptf9aawj4gm6y0lu2vhmdvdp5428pck4q5zrrtf69vyl79ht3ufxqltjgp7",
+            "network": "btc"
         }
 
         access_token = tokens["access_token"]
