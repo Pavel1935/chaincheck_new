@@ -1,0 +1,5 @@
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:99 POST https://check-dev.g5dl.com/api/v1//aml/check — запуск AML-проверки (Ether)
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:105 Response https://check-dev.g5dl.com/api/v1//aml/check 200, 1285 ms
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:110 Получен report_id=53a7aece-b0a8-409d-aa82-2946cf18f0c8
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:114 POST https://check-dev.g5dl.com/api/v1//aml/check/history/one — получение результата по report_id=53a7aece-b0a8-409d-aa82-2946cf18f0c8
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:117 Response https://check-dev.g5dl.com/api/v1//aml/check/history/one 200

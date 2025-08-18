@@ -157,7 +157,7 @@ class TestLogin:
         url = Constants.API_URL + "/auth/login"
 
         payload = {
-              "email": "test@m_ail.ru"
+              "email": "tests@m_ail.ru"
             }
 
         response = requests.post(url, json=payload)
@@ -188,7 +188,7 @@ class TestLogin:
         url = Constants.API_URL + "/auth/login"
 
         payload = {
-              "email": "test@m+ail.ru"
+              "email": "tests@m+ail.ru"
             }
 
         response = requests.post(url, json=payload)
@@ -203,7 +203,7 @@ class TestLogin:
         url = Constants.API_URL + "/auth/login"
 
         payload = {
-              "email": "test'io'domain.com"
+              "email": "tests'io'domain.com"
             }
 
         response = requests.post(url, json=payload)
@@ -217,7 +217,7 @@ class TestLogin:
         url = Constants.API_URL + "/auth/login"
 
         payload = {
-            "email": ".test... iotoday@domain.com"
+            "email": ".tests... iotoday@domain.com"
         }
 
         response = requests.post(url, json=payload)

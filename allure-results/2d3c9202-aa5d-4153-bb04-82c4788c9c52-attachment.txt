@@ -1,0 +1,3 @@
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:164 POST https://check-dev.g5dl.com/api/v1//aml/check — запуск AML-проверки (negative, bad report_id)
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:169 Задаём некорректный report_id=123
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:174 Response https://check-dev.g5dl.com/api/v1//aml/check/history/one 200

@@ -1,0 +1,4 @@
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:188 POST https://check-dev.g5dl.com/api/v1//aml/check — запуск AML-проверки (negative, old token)
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:193 Получен report_id=9bcd2f2e-1bd0-439a-af8f-360faf97831a
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:201 POST https://check-dev.g5dl.com/api/v1//aml/check/history/one — проверка истории с просроченным токеном
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:203 Response https://check-dev.g5dl.com/api/v1//aml/check/history/one 200

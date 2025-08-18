@@ -1,0 +1,4 @@
+2025-08-18 15:28:08,645 | INFO | tests.test_smoke_api_with_log_info | POST https://check-dev.g5dl.com/api/v1//aml/check — запуск AML-проверки (negative, old token)
+2025-08-18 15:28:09,786 | INFO | tests.test_smoke_api_with_log_info | Получен report_id=9bcd2f2e-1bd0-439a-af8f-360faf97831a
+2025-08-18 15:28:10,791 | INFO | tests.test_smoke_api_with_log_info | POST https://check-dev.g5dl.com/api/v1//aml/check/history/one — проверка истории с просроченным токеном
+2025-08-18 15:28:11,939 | INFO | tests.test_smoke_api_with_log_info | Response https://check-dev.g5dl.com/api/v1//aml/check/history/one 200

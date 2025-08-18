@@ -1,0 +1,5 @@
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:23 POST https://check-dev.g5dl.com/api/v1//aml/check — запуск AML-проверки (BTC)
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:29 Response https://check-dev.g5dl.com/api/v1//aml/check 200, 1200 ms
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:39 Получен report_id=321fb1bf-9811-4b83-80ae-cda7038f5f01
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:44 POST https://check-dev.g5dl.com/api/v1//aml/check/history/one — получение результата по report_id=321fb1bf-9811-4b83-80ae-cda7038f5f01
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:49 Response https://check-dev.g5dl.com/api/v1//aml/check/history/one 200, 1203 ms

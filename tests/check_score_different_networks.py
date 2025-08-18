@@ -1,3 +1,4 @@
+import allure
 import pytest
 import requests
 import time
@@ -28,6 +29,7 @@ class TestCheckScore:
             ("btc", "bc1qy55d9w72vaj4apstgrtg866325pepsg8ck9t4m")  # 80-100
         ]
     )
+    @allure.step('Проверка разных типов score для BTC')
     def test_risk_score_wallet_btc(self, network, wallet, tokens):
         access_token = tokens["access_token"]
         headers = {'Authorization': 'Bearer ' + access_token}
@@ -74,6 +76,7 @@ class TestCheckScore:
             ("bsc", "0x4562e14CBC31B73294dFE626ed22152964D96B9F")  # 80-100
         ]
     )
+    @allure.step('Проверка разных типов score для BSC')
     def test_risk_score_wallet_bsc(self, network, wallet, tokens):
 
         access_token = tokens["access_token"]
@@ -122,6 +125,7 @@ class TestCheckScore:
             ("ether", "0xeD6e0A7e4Ac94D976eeBfB82ccf777A3c6baD921")  # 80-100
         ]
     )
+    @allure.step('Проверка разных типов score для Ether')
     def test_risk_score_wallet_ether(self, network, wallet, tokens):
         access_token = tokens["access_token"]
         headers = {'Authorization': f'Bearer ' + access_token}
@@ -169,6 +173,7 @@ class TestCheckScore:
             ("tron", "TEGDHgn5opDRvoSM5TcQ7vHcasknMDVEtY")  # 80-100
         ]
     )
+    @allure.step('Проверка разных типов score для TRON')
     def test_risk_score_wallet_tron(self, network, wallet, tokens):
         access_token = tokens["access_token"]
         headers = {'Authorization': f'Bearer ' + access_token}

@@ -1,0 +1,5 @@
+2025-08-18 15:27:55,054 | INFO | tests.test_smoke_api_with_log_info | POST https://check-dev.g5dl.com/api/v1//aml/check — запуск AML-проверки (Ether)
+2025-08-18 15:27:56,340 | INFO | tests.test_smoke_api_with_log_info | Response https://check-dev.g5dl.com/api/v1//aml/check 200, 1285 ms
+2025-08-18 15:27:56,340 | INFO | tests.test_smoke_api_with_log_info | Получен report_id=53a7aece-b0a8-409d-aa82-2946cf18f0c8
+2025-08-18 15:27:57,345 | INFO | tests.test_smoke_api_with_log_info | POST https://check-dev.g5dl.com/api/v1//aml/check/history/one — получение результата по report_id=53a7aece-b0a8-409d-aa82-2946cf18f0c8
+2025-08-18 15:27:58,612 | INFO | tests.test_smoke_api_with_log_info | Response https://check-dev.g5dl.com/api/v1//aml/check/history/one 200

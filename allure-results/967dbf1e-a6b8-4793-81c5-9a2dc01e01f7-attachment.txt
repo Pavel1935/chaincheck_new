@@ -1,0 +1,5 @@
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:133 POST https://check-dev.g5dl.com/api/v1//aml/check — запуск AML-проверки (TRON)
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:139 Response https://check-dev.g5dl.com/api/v1//aml/check 200, 1120 ms
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:144 Получен report_id=22f54958-a776-430b-b4fd-ef3bda44b691
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:148 POST https://check-dev.g5dl.com/api/v1//aml/check/history/one — получение результата по report_id=22f54958-a776-430b-b4fd-ef3bda44b691
+[32mINFO    [0m tests.test_smoke_api_with_log_info:test_smoke_api_with_log_info.py:151 Response https://check-dev.g5dl.com/api/v1//aml/check/history/one 200

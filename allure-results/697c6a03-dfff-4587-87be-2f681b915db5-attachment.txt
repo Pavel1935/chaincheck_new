@@ -1,0 +1,5 @@
+2025-08-18 15:27:58,615 | INFO | tests.test_smoke_api_with_log_info | POST https://check-dev.g5dl.com/api/v1//aml/check — запуск AML-проверки (TRON)
+2025-08-18 15:27:59,735 | INFO | tests.test_smoke_api_with_log_info | Response https://check-dev.g5dl.com/api/v1//aml/check 200, 1120 ms
+2025-08-18 15:27:59,735 | INFO | tests.test_smoke_api_with_log_info | Получен report_id=22f54958-a776-430b-b4fd-ef3bda44b691
+2025-08-18 15:28:00,737 | INFO | tests.test_smoke_api_with_log_info | POST https://check-dev.g5dl.com/api/v1//aml/check/history/one — получение результата по report_id=22f54958-a776-430b-b4fd-ef3bda44b691
+2025-08-18 15:28:01,959 | INFO | tests.test_smoke_api_with_log_info | Response https://check-dev.g5dl.com/api/v1//aml/check/history/one 200

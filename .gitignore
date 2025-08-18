@@ -18,7 +18,7 @@ ENV/
 *.swp
 *.pyc
 
-# Pytest / test cache
+# Pytest / tests cache
 .pytest_cache/
 .cache/
 
@@ -32,7 +32,7 @@ coverage.xml
 *.cover
 *.py,cover
 
-# JUnit XML test results
+# JUnit XML tests results
 junit-*.xml
 test-results/
 

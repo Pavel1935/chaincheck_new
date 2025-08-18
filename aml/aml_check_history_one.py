@@ -1,11 +1,17 @@
+
 import requests
 from Constants import Constants
 from conftest import report_id
 from conftest import tokens
-from test.test_smoke_api import RESET
 
-RESET="\033[0m"; BOLD="\033[1m"; ITALIC="\033[3m"
-GREEN="\033[32m"; BLUE="\033[34m"; ORANGE="\033[33m"; RED="\033[31m";YELLOW = "\033[93m"
+RESET = "\033[0m"
+BOLD = "\033[1m"
+ITALIC = "\033[3m"
+GREEN = "\033[32m"
+BLUE = "\033[34m"
+ORANGE = "\033[33m"
+RED = "\033[31m"
+YELLOW = "\033[93m"
 
 
 class TestAmlCheckHistoryOne:
@@ -17,7 +23,7 @@ class TestAmlCheckHistoryOne:
         headers = {'Authorization': 'Bearer ' + access_token}
 
         payload = {
-                "report_id": "06ce04ec-7d5d-4975-b7ce-81869fc3fcf8"
+                "report_id": "ef0c5524-adc4-41f2-a857-00d7b95fd1cb"
         }
 
         response = requests.post(url, headers=headers, json=payload)

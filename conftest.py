@@ -109,9 +109,35 @@ def _configure_logging():
 
 _configured = False
 
+
 @pytest.hookimpl(tryfirst=True)
 def pytest_configure(config):
     global _configured
     if not _configured:
         _configure_logging()
         _configured = True
+
+
+def wait_for_report_ready(report_id, headers, base_url, timeout=10, interval=0.5):
+    """
+    Ожидает пока отчет будет готов в течение timeout секунд.
+
+    :param report_id: ID отчета
+    :param headers: заголовки (с токеном авторизации)
+    :param base_url: базовый URL API
+    :param timeout: сколько максимум ждать (в секундах)
+    :param interval: как часто опрашивать (в секундах)
+    :return: json ответа, когда готов
+    :raises TimeoutError: если отчет не готов за timeout
+    """
+    url_check = base_url + "/aml/check/history/one"
+    start = time.time()
+
+    while time.time() - start < timeout:
+        response = requests.post(url_check, headers=headers, json={"report_id": report_id})
+        data = response.json()
+        if data.get("ok") == 1:
+            return data
+        time.sleep(interval)  # маленькая пауза перед новой попыткой
+
+    raise TimeoutError(f"Report {report_id} was not ready in {timeout} seconds")
