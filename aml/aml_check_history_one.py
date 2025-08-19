@@ -2,7 +2,7 @@ import requests
 from Constants import Constants
 from conftest import report_id
 from conftest import tokens
-from test.test_risk_score_1 import RESET
+from test.test_smoke_api import RESET
 
 RESET="\033[0m"; BOLD="\033[1m"; ITALIC="\033[3m"
 GREEN="\033[32m"; BLUE="\033[34m"; ORANGE="\033[33m"; RED="\033[31m";YELLOW = "\033[93m"
@@ -17,7 +17,7 @@ class TestAmlCheckHistoryOne:
         headers = {'Authorization': 'Bearer ' + access_token}
 
         payload = {
-                "report_id": "85541086-dc40-4842-bd8d-28e836839a73"
+                "report_id": "06ce04ec-7d5d-4975-b7ce-81869fc3fcf8"
         }
 
         response = requests.post(url, headers=headers, json=payload)
@@ -81,7 +81,7 @@ class TestAmlCheckHistoryOne:
         headers = {'Authorization': 'Bearer ' + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhbWwtYmFja2VuZC1nYXRld2F5Iiwic3ViIjoiMDE5MDEwYjQtYTVmZS03MmYzLTllYjUtM2E4NDg2YjY1ODY1IiwiYXVkIjpbImFtbC1iYWNrZW5kLWdhdGV3YXktdXNlcnMiXSwiZXhwIjoxNzUyODI1OTQ2LCJuYmYiOjE3NTI3Mzk1NDYsImlhdCI6MTc1MjczOTU0NiwiZmluZ2VycHJpbnQiOiJsR0xneGE2Yi9ieEhUVHVJTzlPKzdseUVrZnlmNnNQbC9EUXgxWCt6bWdvPSIsInVzZXJfcm9sZSI6M30.XFSxiHeRssn28oEY1VEBXi8IhmNF9apI23IXOZxLvF4"}
 
         payload = {
-                "report_id": 123
+                "report_id": report_id
         }
 
         response = requests.post(url, headers=headers, json=payload)
