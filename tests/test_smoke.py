@@ -4,13 +4,15 @@ import time
 from Constants import Constants
 from conftest import wait_for_report_ready
 import allure
+from redis_utils import get_verification_code
+from loguru import logger
+from conftest import login_page
 
 
-
-class TestAMLCheckSmoke:
+class TestCheckSmoke:
     @pytest.mark.smoke
     @allure.step('Проверка адреса в сети BTC')
-    def test_aml_check_smoke_btc_ok(self, tokens):
+    def test_check_smoke_btc_ok(self, tokens):
         url = Constants.API_URL + "aml/check"
 
         payload = {
@@ -40,7 +42,7 @@ class TestAMLCheckSmoke:
 
     @pytest.mark.smoke
     @allure.step('Проверка адреса в сети BSC')
-    def test_aml_check_smoke_bsc_ok(self, tokens):
+    def test_check_smoke_bsc_ok(self, tokens):
         url = Constants.API_URL + "aml/check"
 
         payload = {
@@ -70,7 +72,7 @@ class TestAMLCheckSmoke:
 
     @pytest.mark.smoke
     @allure.step('Проверка адреса в сети ETH')
-    def test_aml_check_smoke_ether_ok(self, tokens):
+    def test_check_smoke_ether_ok(self, tokens):
         url = Constants.API_URL + "aml/check"
 
         payload = {
@@ -100,7 +102,7 @@ class TestAMLCheckSmoke:
 
     @pytest.mark.smoke
     @allure.step('Проверка адреса в сети TRON')
-    def test_aml_check_smoke_tron_ok(self, tokens):
+    def test_check_smoke_tron_ok(self, tokens):
         url = Constants.API_URL + "aml/check"
 
         payload = {
@@ -184,4 +186,22 @@ class TestAMLCheckSmoke:
         data = response.json()
         assert data["ok"] == 0
         assert data["error"] == "UNAUTHORIZED"
+
+    class TestLoginFlow:
+        @pytest.mark.smoke
+        @allure.step('Позитивная проверка входа по email')
+        def test_email_login_ui(self, login_page):
+            logger.info("Начинаю тест: вход по email")
+
+            login_page.open("https://check-dev.g5dl.com")
+
+            login_page.enter_wallet_address("0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f")
+            login_page.enter_email(Constants.EMAIL)
+
+            code = get_verification_code()
+            login_page.enter_code(code)
+
+            login_page.check_final_result()
+            logger.info("Проверили результат")
+
 

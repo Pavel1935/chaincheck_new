@@ -5,6 +5,12 @@ from redis_utils import get_verification_code
 import logging
 import os
 import pytest
+from playwright.sync_api import sync_playwright
+from pages.login_page import LoginPage
+
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
@@ -18,7 +24,6 @@ def tokens():
     login_response = requests.post(login_url, json=payload)
     login_response.raise_for_status()
     print("[LOGIN] RESPONSE:", login_response.text)
-
 
     from redis_utils import get_verification_code
     code = get_verification_code()
@@ -141,3 +146,22 @@ def wait_for_report_ready(report_id, headers, base_url, timeout=10, interval=0.5
         time.sleep(interval)  # маленькая пауза перед новой попыткой
 
     raise TimeoutError(f"Report {report_id} was not ready in {timeout} seconds")
+
+@pytest.fixture
+def login_page():
+    logger.info("Запуск Playwright и браузера")
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        context = browser.new_context()
+        page = context.new_page()
+        logger.info("Создание объекта LoginPage")
+        yield LoginPage(page)
+        logger.info("Закрытие браузера")
+        browser.close()
+
+
+@pytest.fixture
+def verification_code_redis():
+    def _get(email: str) -> str:
+        return get_verification_code(email=email)
+    return _get
