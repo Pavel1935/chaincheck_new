@@ -13,6 +13,7 @@ class TestCheckSmoke:
     @pytest.mark.smoke
     @allure.step('Проверка адреса в сети BTC')
     def test_check_smoke_btc_ok(self, tokens):
+        logger.info("Начинаю тест: проверка адреса в сети BTC")
         url = Constants.API_URL + "aml/check"
 
         payload = {
@@ -39,10 +40,13 @@ class TestCheckSmoke:
 
         data = response.json()
         assert data["ok"] == 1
+        logger.info("Проверяю результат")
+
 
     @pytest.mark.smoke
     @allure.step('Проверка адреса в сети BSC')
     def test_check_smoke_bsc_ok(self, tokens):
+        logger.info("Начинаю тест: проверка адреса в сети BSC")
         url = Constants.API_URL + "aml/check"
 
         payload = {
@@ -69,10 +73,12 @@ class TestCheckSmoke:
 
         data = response.json()
         assert data["ok"] == 1
+        logger.info("Проверяю результат")
 
     @pytest.mark.smoke
     @allure.step('Проверка адреса в сети ETH')
     def test_check_smoke_ether_ok(self, tokens):
+        logger.info("Начинаю тест: проверка адреса в сети ETH")
         url = Constants.API_URL + "aml/check"
 
         payload = {
@@ -99,10 +105,13 @@ class TestCheckSmoke:
 
         data = response.json()
         assert data["ok"] == 1
+        logger.info("Проверяю результат")
 
     @pytest.mark.smoke
     @allure.step('Проверка адреса в сети TRON')
     def test_check_smoke_tron_ok(self, tokens):
+        logger.info("Начинаю тест: проверка адреса в сети TRON")
+
         url = Constants.API_URL + "aml/check"
 
         payload = {
@@ -129,10 +138,12 @@ class TestCheckSmoke:
 
         data = response.json()
         assert data["ok"] == 1
+        logger.info("Проверяю результат")
 
     @pytest.mark.smoke
     @allure.step('Негативная проверка неверного report_id')
     def test_smoke_negative_api_incorrect_report_id(self, tokens):
+        logger.info("Начинаю негативный тест: проверка неверного report_id")
         access_token = tokens["access_token"]
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -157,10 +168,13 @@ class TestCheckSmoke:
         data = response.json()
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
+        logger.info("Проверяю результат")
+
 
     @pytest.mark.smoke
     @allure.step('Негативная проверка протухшего токена авторизации')
     def test_smoke_negative_api_old_access_token(self, tokens):
+        logger.info("Начинаю тест: протухшего access_token")
         access_token = tokens["access_token"]
         headers_1 = {'Authorization': 'Bearer ' + access_token}
 
@@ -186,6 +200,7 @@ class TestCheckSmoke:
         data = response.json()
         assert data["ok"] == 0
         assert data["error"] == "UNAUTHORIZED"
+        logger.info("Проверяю результат")
 
     class TestLoginFlow:
         @pytest.mark.smoke
@@ -202,6 +217,37 @@ class TestCheckSmoke:
             login_page.enter_code(code)
 
             login_page.check_final_result()
-            logger.info("Проверили результат")
+            logger.info("Проверяю результат")
 
+        @pytest.mark.smoke
+        @allure.step('Негативная проверка некорректного адреса')
+        def test_email_login_ui_incorrect_address_ui(self, login_page):
+            logger.info("Начинаю тест: вход по email")
+
+            login_page.open("https://check-dev.g5dl.com")
+
+            login_page.enter_wallet_address("0x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
+            login_page.enter_email(Constants.EMAIL)
+
+            code = get_verification_code()
+            login_page.enter_code(code)
+
+            login_page.click_check_for_free_button()
+            login_page.wait_for_invalid_address_text()
+            logger.info("Проверяю результат")
+
+        @pytest.mark.smoke
+        @allure.step('Негативная проверка некорректного email')
+        def test_email_login_ui_incorrect_address_ui(self, login_page):
+            logger.info("Начинаю тест: вход по email")
+
+            login_page.open("https://check-dev.g5dl.com")
+
+            login_page.enter_wallet_address("0x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
+
+            login_page.enter_invalid_email("oukb1147gmail.")
+
+            # login_page.click_check_for_free_button()
+            login_page.wait_for_invalid_email_text()
+            logger.info("Проверяю результат")
 

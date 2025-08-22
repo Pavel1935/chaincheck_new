@@ -1,9 +1,14 @@
-import allure
+
+from conftest import tokens
 import pytest
 import requests
 import time
 from Constants import Constants
-from conftest import tokens
+from conftest import wait_for_report_ready
+import allure
+from redis_utils import get_verification_code
+from loguru import logger
+from conftest import login_page
 
 
 RESET = "\033[0m"
@@ -31,6 +36,7 @@ class TestCheckScore:
     )
     @allure.step('Проверка разных типов score для BTC')
     def test_risk_score_wallet_btc(self, network, wallet, tokens):
+        logger.info("Начинаю тест: проверка разных типов score для BTC")
         access_token = tokens["access_token"]
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -51,6 +57,7 @@ class TestCheckScore:
         data = response.json()
         assert data["ok"] == 1
         risk_score = data["result"].get("risk_score")
+        logger.info("Проверяю результат")
 
         print(f"\nАдрес: {wallet}")
         print(f"Оценка риска: {risk_score}")
@@ -78,7 +85,7 @@ class TestCheckScore:
     )
     @allure.step('Проверка разных типов score для BSC')
     def test_risk_score_wallet_bsc(self, network, wallet, tokens):
-
+        logger.info("Начинаю тест: проверка разных типов score для BSC")
         access_token = tokens["access_token"]
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -100,6 +107,7 @@ class TestCheckScore:
         data = response.json()
         assert data["ok"] == 1
         risk_score = data["result"].get("risk_score")
+        logger.info("Проверяю результат")
 
         print(f"\nАдрес: {wallet}")
         print(f"Оценка риска: {risk_score}")
@@ -127,6 +135,7 @@ class TestCheckScore:
     )
     @allure.step('Проверка разных типов score для Ether')
     def test_risk_score_wallet_ether(self, network, wallet, tokens):
+        logger.info("Начинаю тест: проверка разных типов score для Ether")
         access_token = tokens["access_token"]
         headers = {'Authorization': f'Bearer ' + access_token}
 
@@ -148,6 +157,7 @@ class TestCheckScore:
         data = response.json()
         assert data["ok"] == 1
         risk_score = data["result"].get("risk_score")
+        logger.info("Проверяю результат")
 
         print(f"\nАдрес: {wallet}")
         print(f"Оценка риска: {risk_score}")
@@ -175,6 +185,7 @@ class TestCheckScore:
     )
     @allure.step('Проверка разных типов score для TRON')
     def test_risk_score_wallet_tron(self, network, wallet, tokens):
+        logger.info("Начинаю тест: проверка разных типов score для TRON")
         access_token = tokens["access_token"]
         headers = {'Authorization': f'Bearer ' + access_token}
 
@@ -199,6 +210,7 @@ class TestCheckScore:
 
         print(f"\nАдрес: {wallet}")
         print(f"Оценка риска: {risk_score}")
+        logger.info("Проверяю результат")
 
         if risk_score <= 19:
             print(f"{BOLD}{ITALIC}{GREEN}Низкий риск{RESET}")
@@ -210,4 +222,3 @@ class TestCheckScore:
             print(f"{BOLD}{ITALIC}{YELLOW}Высокий риск{RESET}")
         elif 90 <= risk_score <= 100:
             print(f"{BOLD}{ITALIC}{RED}Критический риск{RESET}")
-

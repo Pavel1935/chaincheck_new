@@ -6,7 +6,7 @@ import logging
 import os
 import pytest
 from playwright.sync_api import sync_playwright
-from pages.login_page import LoginPage
+from pages.smoke_login_page import LoginPage
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -151,7 +151,10 @@ def wait_for_report_ready(report_id, headers, base_url, timeout=10, interval=0.5
 def login_page():
     logger.info("Запуск Playwright и браузера")
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(
+        headless=False,
+        slow_mo=500   # задержка 500 мс на каждый action
+        )
         context = browser.new_context()
         page = context.new_page()
         logger.info("Создание объекта LoginPage")
