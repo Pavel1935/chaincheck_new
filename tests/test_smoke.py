@@ -10,6 +10,50 @@ from conftest import login_page
 
 
 class TestCheckSmoke:
+
+    @pytest.mark.smoke
+    @allure.step('Проверка config')
+    def test_config(self):
+        logger.info("Начинаю тест: проверка config окружения")
+        url = "https://check-dev.g5dl.com/api2"
+
+        payload ={
+                "jsonrpc": "2.0",
+                "method": "get_networks",
+                "params": {},
+                "id": 1
+                    }
+        response = requests.post(url, json=payload)
+        print("RESPONSE TEXT:", response.text)
+
+        assert response.status_code == 200
+
+        data = response.json()
+        expected_ethereum = {
+            "network_id": "ether",
+            "network": "Ethereum",
+            "address_tpl": "^0x[a-fA-F0-9]{40}$"
+        }
+        assert data["result"][0] == expected_ethereum
+        expected_ethereum = {
+            "network_id": "bsc",
+            "network": "BNB Smart Chain",
+            "address_tpl": "^0x[a-fA-F0-9]{40}$"
+        }
+        assert data["result"][1] == expected_ethereum
+        expected_ethereum = {
+                        "network_id": "tron",
+            "network": "Tron",
+            "address_tpl": "^T[a-zA-Z0-9]{33}$"
+        }
+        assert data["result"][2] == expected_ethereum
+        expected_ethereum = {
+            "network_id": "btc",
+            "network": "Bitcoin",
+            "address_tpl": "^(bc(0([ac-hj-np-z02-9]{39}|[ac-hj-np-z02-9]{59})|1[ac-hj-np-z02-9]{8,87})|[13][a-km-zA-HJ-NP-Z1-9]{25,35})$"
+        }
+        assert data["result"][3] == expected_ethereum
+
     @pytest.mark.smoke
     @allure.step('Проверка адреса в сети BTC')
     def test_check_smoke_btc_ok(self, tokens):
@@ -30,6 +74,7 @@ class TestCheckSmoke:
 
         data = response.json()
         report_id_smoke = data["result"]["report_id"]
+        print("RESPONSE TEXT:", response.text)
 
         data = wait_for_report_ready(report_id_smoke, headers, Constants.API_URL)
         assert data["ok"] == 1
@@ -240,14 +285,11 @@ class TestCheckSmoke:
         @allure.step('Негативная проверка некорректного email')
         def test_email_login_ui_incorrect_address_ui(self, login_page):
             logger.info("Начинаю тест: вход по email")
-
             login_page.open("https://check-dev.g5dl.com")
 
-            login_page.enter_wallet_address("0x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
-
+            login_page.enter_wallet_address_with_chainge_network("0x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
             login_page.enter_invalid_email("oukb1147gmail.")
 
-            # login_page.click_check_for_free_button()
             login_page.wait_for_invalid_email_text()
             logger.info("Проверяю результат")
 

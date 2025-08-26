@@ -80,8 +80,8 @@ def report_id(tokens):
     url = Constants.API_URL + "aml/check"
     access_token = tokens["access_token"]
     payload = {
-        "wallet": "bc1q29k0jkvpekcuv6dwchjww8pev92gsxe9uw24wz",
-        "network": "btc"
+        "wallet": "0x1EDbA89FF829c4DF84b15F1D9Dd75DC9a5582F2b",
+        "network": "bsc"
     }
     headers = {'Authorization': 'Bearer ' + access_token}
 

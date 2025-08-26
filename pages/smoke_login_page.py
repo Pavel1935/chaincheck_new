@@ -32,7 +32,7 @@ class LoginPage(BasePage):
 
     def select_network(self, network_name: str):
         self.page.get_by_role("button", name="button").click()
-        self.page.get_by_role("button", name=network_name).click()
+        self.page.get_by_role("button", name="BSC").click()
 
     def wait_for_invalid_email_text(self, timeout=10000):
         locator = self.page.get_by_text("wrong or not valid email")
@@ -43,5 +43,12 @@ class LoginPage(BasePage):
         self.page.locator(LoginLocators.ENTER_EMAIL_INPUT).fill(email)
         self.page.locator(LoginLocators.LOG_IN_BUTTON).click()
 
+    def enter_wallet_address_with_chainge_network(self, address: str):
+        self.page.locator(LoginLocators.WALLET_ADDRESS_INPUT).fill(address)
+        self.page.get_by_role("button", name="button").click()
+        self.page.get_by_role("button", name="BSC").click()
+        self.page.locator(LoginLocators.CHECK_FOR_FREE_BUTTON).click()
 
 
+
+з

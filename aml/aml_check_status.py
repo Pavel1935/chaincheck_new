@@ -11,7 +11,7 @@ class TestAmlCheckStatus:
         access_token = tokens["access_token"]
 
         payload = {
-          "report_id": "report_id"
+          "report_id": report_id
         }
 
         headers = {'Authorization': 'Bearer ' + access_token}
