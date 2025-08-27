@@ -9,7 +9,9 @@ class TestLogin:
         url = Constants.API_URL + "/auth/login"
 
         payload = {
-              "email": "oukb1147@gmail.com"
+            "email": "oukb1147@gmail.com",
+            "recaptcha_token": "SpartakChampion"
+
             }
 
         response = requests.post(url, json=payload)

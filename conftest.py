@@ -7,18 +7,64 @@ import os
 import pytest
 from playwright.sync_api import sync_playwright
 from pages.smoke_login_page import LoginPage
-
+from contextlib import suppress
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
+
+# @pytest.fixture(scope="session")
+# def tokens():
+#     #login
+#     requests.post(
+#         f"{Constants.API_URL}/auth/login",
+#         json={"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"}
+#     ).raise_for_status()
+#
+#     code = get_verification_code(retries=60, delay=0.5)
+#     print(f"[Verification code] Received: {code}")
+#
+#     verify_url = Constants.API_URL + "/auth/verify-email"
+#     body = {
+#             "email": Constants.EMAIL,
+#             "code": code
+#         }
+#
+#     verify_response = requests.post(verify_url, json=body)
+#     verify_response.raise_for_status()
+#     print("[VERIFY] RESPONSE:", verify_response.text)
+#
+#     data = verify_response.json()
+#     assert data.get("ok") == 1, f"Verify failed: {data}"
+#
+#     access_token = data.get("access-token")
+#     refresh_token = data.get("refresh_token")
+#
+#     print(f"[TOKENS] Access: {access_token}")
+#     print(f"[TOKENS] Refresh: {refresh_token}")
+#
+#     creds = {
+#         "access_token": data.get("access-token"),
+#         "refresh_token": verify_response.cookies.get("refresh_token")
+#     }
+#
+#     yield creds
+#
+#     #logout
+#     with suppress(Exception):
+#         requests.get(
+#             f"{Constants.API_URL}/logout",
+#             headers={"Authorization": f"Bearer {creds['access_token']}"},
+#             cookies={"refresh_token": creds["refresh_token"]},
+#             json={}
+#         )
 
 @pytest.fixture(scope="session")
 def tokens():
     login_url = Constants.API_URL + "/auth/login"
 
     payload = {
-        "email": Constants.EMAIL
+        "email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"
     }
 
     login_response = requests.post(login_url, json=payload)
@@ -45,14 +91,27 @@ def tokens():
 
     access_token = data.get("access-token")
     refresh_token = verify_response.cookies.get("refresh_token")
-
     print(f"[TOKENS] Access: {access_token}")
     print(f"[TOKENS] Refresh: {refresh_token}")
 
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token
-    }
+    # return {
+    #     "access_token": access_token,
+    #     "refresh_token": refresh_token
+    # }
+    creds = {
+                "access_token": data.get("access-token"),
+                "refresh_token": verify_response.cookies.get("refresh_token")
+                }
+    yield creds
+    #logout
+    with suppress(Exception):
+                 requests.get(
+                    f"{Constants.API_URL}/logout",
+                    headers={"Authorization": f"Bearer {creds['access_token']}"},
+                    cookies={"refresh_token": creds["refresh_token"]},
+                    json={}                    )
+
+
 
 
 @pytest.fixture

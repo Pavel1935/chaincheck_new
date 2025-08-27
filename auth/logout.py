@@ -4,7 +4,6 @@ from conftest import tokens
 
 
 class TestLogout:
-
     def test_logout(self, tokens):
 
         cookies = {
@@ -22,7 +21,6 @@ class TestLogout:
         print("RESPONSE TEXT:", response.text)
 
         data = response.json()
-
         assert data["ok"] == 1
 
     def test_logout_without_refresh_token(self, tokens):
