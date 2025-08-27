@@ -112,8 +112,6 @@ def tokens():
                     json={}                    )
 
 
-
-
 @pytest.fixture
 def get_access_token(tokens):
     url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
