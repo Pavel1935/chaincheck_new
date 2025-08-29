@@ -49,6 +49,3 @@ class LoginPage(BasePage):
         self.page.get_by_role("button", name="BSC").click()
         self.page.locator(LoginLocators.CHECK_FOR_FREE_BUTTON).click()
 
-
-
-з

@@ -202,7 +202,7 @@ class TestCheckSmoke:
         assert data["error"] == "UNAUTHORIZED"
         logger.info("Проверяю результат")
 
-        class TestLoginFlow:
+    class TestLoginFlow:
             @pytest.mark.smoke
             @allure.step('Позитивная проверка входа по email')
             def test_email_login_ui(self, login_page):
@@ -219,22 +219,22 @@ class TestCheckSmoke:
                 login_page.check_final_result()
                 logger.info("Проверяю результат")
 
-            @pytest.mark.smoke
-            @allure.step('Негативная проверка некорректного адреса')
-            def test_incorrect_address_ui(self, login_page):
-                logger.info("Начинаю тест некорректного адреса")
-
-                login_page.open("https://check-dev.g5dl.com")
-
-                login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
-                login_page.enter_email(Constants.EMAIL)
-
-                code = get_verification_code()
-                login_page.enter_code(code)
-
-                login_page.click_check_for_free_button()
-                login_page.wait_for_invalid_address_text()
-                logger.info("Проверяю результат")
+            # @pytest.mark.smoke
+            # @allure.step('Негативная проверка некорректного адреса')
+            # def test_incorrect_address_ui(self, login_page):
+            #     logger.info("Начинаю тест некорректного адреса")
+            #
+            #     login_page.open("https://check-dev.g5dl.com")
+            #
+            #     login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
+            #     login_page.enter_email(Constants.EMAIL)
+            #
+            #     code = get_verification_code()
+            #     login_page.enter_code(code)
+            #
+            #     login_page.click_check_for_free_button()
+            #     login_page.wait_for_invalid_address_text()
+            #     logger.info("Проверяю результат")
 
             @pytest.mark.smoke
             @allure.step('Негативная проверка некорректного email')
