@@ -1,7 +1,7 @@
 from Constants import Constants
 from pages.base_page import BasePage
 from playwright.sync_api import expect
-from locators.smoke_login_locators import LoginLocators
+from locators.login_locators import LoginLocators
 
 
 class LoginPage(BasePage):
@@ -48,4 +48,12 @@ class LoginPage(BasePage):
         self.page.get_by_role("button", name="button").click()
         self.page.get_by_role("button", name="BSC").click()
         self.page.locator(LoginLocators.CHECK_FOR_FREE_BUTTON).click()
+
+    def click_back_button_and_check_result(self):
+        self.page.locator(LoginLocators.BACK_BUTTON).click()
+        self.page.locator(LoginLocators.LOG_IN_BUTTON).click()
+        locator = self.page.get_by_text("Error: unknown auth error")
+        expect(locator).to_be_visible(timeout=5000)
+
+
 

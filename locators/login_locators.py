@@ -7,4 +7,4 @@ class LoginLocators:
     MAIN_BUTTON = "button:has-text('Main')"
     CODE_INPUTS = "[data-melt-pin-input-input]"
     TEXT = "INVALID_ADDRESS"
-
+    BACK_BUTTON = "[data-test-id='auth-code-back']"

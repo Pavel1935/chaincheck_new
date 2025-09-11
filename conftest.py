@@ -6,7 +6,7 @@ import logging
 import os
 import pytest
 from playwright.sync_api import sync_playwright
-from pages.smoke_login_page import LoginPage
+from pages.login_page import LoginPage
 from contextlib import suppress
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

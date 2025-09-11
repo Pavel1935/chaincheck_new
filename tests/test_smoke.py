@@ -202,6 +202,26 @@ class TestCheckSmoke:
         assert data["error"] == "UNAUTHORIZED"
         logger.info("Проверяю результат")
 
+    def test_check_120sec(self, tokens):
+        url = f"{Constants.API_URL}/aml/check"
+        payload = {
+            "wallet": "bc1qffyax9rrxmqyq8xwjkzrrqwqjp3ppz5a4665f9",
+            "network": "btc"
+        }
+        headers = {"Authorization": f"Bearer {tokens['access_token']}"}
+
+        # 1) первый запрос
+        requests.post(url, headers=headers, json=payload)
+
+        # 2) второй запрос (в пределах 120 сек — сразу)
+        response = requests.post(url, headers=headers, json=payload)
+        data = response.json()
+
+        # ожидаем ошибку из-за кулилдауна
+        assert data["ok"] == 0
+        # если у вас есть код/сообщение ошибки, можно сузить:
+        # assert data["error"] == "RATE_LIMIT"
+
     class TestLoginFlow:
             @pytest.mark.smoke
             @allure.step('Позитивная проверка входа по email')
@@ -219,22 +239,22 @@ class TestCheckSmoke:
                 login_page.check_final_result()
                 logger.info("Проверяю результат")
 
-            # @pytest.mark.smoke
-            # @allure.step('Негативная проверка некорректного адреса')
-            # def test_incorrect_address_ui(self, login_page):
-            #     logger.info("Начинаю тест некорректного адреса")
-            #
-            #     login_page.open("https://check-dev.g5dl.com")
-            #
-            #     login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
-            #     login_page.enter_email(Constants.EMAIL)
-            #
-            #     code = get_verification_code()
-            #     login_page.enter_code(code)
-            #
-            #     login_page.click_check_for_free_button()
-            #     login_page.wait_for_invalid_address_text()
-            #     logger.info("Проверяю результат")
+            @pytest.mark.smoke
+            @allure.step('Негативная проверка некорректного адреса')
+            def test_incorrect_address_ui(self, login_page):
+                logger.info("Начинаю тест некорректного адреса")
+
+                login_page.open("https://check-dev.g5dl.com")
+
+                login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
+                login_page.enter_email(Constants.EMAIL)
+
+                code = get_verification_code()
+                login_page.enter_code(code)
+
+                login_page.click_check_for_free_button()
+                login_page.wait_for_invalid_address_text()
+                logger.info("Проверяю результат")
 
             @pytest.mark.smoke
             @allure.step('Негативная проверка некорректного email')
@@ -249,25 +269,16 @@ class TestCheckSmoke:
                 login_page.wait_for_invalid_email_text()
                 logger.info("Проверяю результат")
 
-            # Error: unknown auth error
+            @pytest.mark.smoke
+            @allure.step('Негативная проверка что капча отрабатывает 120 сек паузы между отправкой кода')
+            def test_incorrect_120sec_pause_ui(self, login_page):
+                logger.info("Начинаю тест: пауза 120 сек")
 
-            def test_check_120sec(self, tokens):
-                url = f"{Constants.API_URL}/aml/check"
-                payload = {
-                    "wallet": "bc1qffyax9rrxmqyq8xwjkzrrqwqjp3ppz5a4665f9",
-                    "network": "btc"
-                }
-                headers = {"Authorization": f"Bearer {tokens['access_token']}"}
+                login_page.open("https://check-dev.g5dl.com")
 
-                # 1) первый запрос
-                requests.post(url, headers=headers, json=payload)
+                login_page.enter_wallet_address("0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f")
+                login_page.enter_email(Constants.EMAIL)
 
-                # 2) второй запрос (в пределах 120 сек — сразу)
-                response = requests.post(url, headers=headers, json=payload)
-                data = response.json()
-
-                # ожидаем ошибку из-за кулилдауна
-                assert data["ok"] == 0
-                # если у вас есть код/сообщение ошибки, можно сузить:
-                # assert data["error"] == "RATE_LIMIT"
+                login_page.click_back_button_and_check_result()
+                logger.info("Проверяю результат")
 
