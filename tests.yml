@@ -1,0 +1,37 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: "0 2 * * *"  # nightly в 02:00 UTC
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright/python:v1.45.0
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Smoke API
+        if: github.event_name == 'pull_request'
+        run: pytest -m smoke -q --maxfail=1 --alluredir=allure-results
+
+      - name: Smoke UI
+        if: github.event_name == 'pull_request'
+        run: pytest -m smoke_ui -q --alluredir=allure-results
+
+      - name: Nightly regression
+        if: github.event_name == 'schedule'
+        run: pytest -m "critical or regression" -q --alluredir=allure-results -n auto
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
