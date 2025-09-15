@@ -1,3 +1,9 @@
 pytest
 requests
 redis
+pytest
+pytest-xdist
+pytest-rerunfailures
+allure-pytest
+playwright
+pytest-playwright
