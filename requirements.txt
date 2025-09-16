@@ -7,3 +7,4 @@ pytest-rerunfailures
 allure-pytest
 playwright
 pytest-playwright
+loguru
