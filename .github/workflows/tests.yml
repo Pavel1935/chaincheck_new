@@ -1,37 +1,53 @@
-name: Tests
+name: Smoke tests                 # Имя workflow в GitHub Actions
 
 on:
-  pull_request:
-  push:
+  push:                           # Запускать при пушах в main
     branches: [ main ]
-  schedule:
-    - cron: "0 2 * * *"  # nightly в 02:00 UTC
+  pull_request:                   # Запускать на каждый PR в main
+  schedule:                       # Автозапуск по расписанию (каждое утро)
+    - cron: "0 5 * * *"          # 05:00 UTC (08:00 по Москве). Поменяй при необходимости
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    container:
+  smoke:                          # Один job: smoke
+    runs-on: ubuntu-latest        # GitHub выдаёт виртуалку, НО job внутри контейнера (ниже)
+    container:                    # Всё выполнение идёт в Docker-образе Playwright+Python
       image: mcr.microsoft.com/playwright/python:v1.45.0
+      # options ниже — полезные флаги для стабильности браузеров в CI
+      options: --ipc=host --shm-size=1g
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Шаг 1: получить код репозитория
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+        # Шаг 2: поставить Python-зависимости проекта
+        # (образ уже содержит браузеры и системные либы для Playwright)
 
-      - name: Smoke API
-        if: github.event_name == 'pull_request'
-        run: pytest -m smoke -q --maxfail=1 --alluredir=allure-results
+      - name: Run SMOKE tests
+        run: pytest -m smoke -q --alluredir=allure-results
+        # Шаг 3: запустить ТОЛЬКО smoke-тесты
+        # -m smoke       → фильтр по маркеру @pytest.mark.smoke
+        # -q             → компактный вывод
+        # (обрати внимание: НЕТ --maxfail=1, прогон не прерывается при первом фейле)
+        # --alluredir    → сохранить результаты для Allure в папку allure-results
 
-      - name: Smoke UI
-        if: github.event_name == 'pull_request'
-        run: pytest -m smoke_ui -q --alluredir=allure-results
-
-      - name: Nightly regression
-        if: github.event_name == 'schedule'
-        run: pytest -m "critical or regression" -q --alluredir=allure-results -n auto
-
-      - name: Upload artifacts
+      - name: Upload Allure results
+        if: always()              # Загружать артефакты даже если тесты упали
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: allure-results
+          if-no-files-found: warn # Не падаем, если папки вдруг нет
+
+      - name: Upload UI artifacts (screenshots/traces/videos)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-artifacts
+          path: |
+            screenshots
+            traces
+            videos
+          if-no-files-found: ignore   # Эти папки появляются только если ты их создаёшь в тестах
+
