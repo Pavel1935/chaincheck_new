@@ -11,7 +11,7 @@ jobs:
   smoke:                          # Один job: smoke
     runs-on: ubuntu-latest        # GitHub выдаёт виртуалку, НО job внутри контейнера (ниже)
     container:                    # Всё выполнение идёт в Docker-образе Playwright+Python
-      image: mcr.microsoft.com/playwright/python:v1.45.0
+      image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
       # options ниже — полезные флаги для стабильности браузеров в CI
       options: --ipc=host --shm-size=1g
 
