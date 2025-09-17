@@ -18,7 +18,7 @@ class LoginPage(BasePage):
         # expect(self.page.locator(LoginLocators.NEW_CHECK_BUTTON)).to_be_enabled()
 
     def check_final_result(self):
-        self.page.locator(LoginLocators.NEW_CHECK_BUTTON1).click()
+        self.page.locator(LoginLocators.CHECK_FOR_FREE_BUTTON).click()
         self.page.locator(LoginLocators.MAIN_BUTTON).wait_for()
         expect(self.page.locator(LoginLocators.MAIN_BUTTON)).to_be_enabled()
 
