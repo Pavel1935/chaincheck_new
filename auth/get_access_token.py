@@ -18,7 +18,6 @@ class TestGetAccessToken:
         print("RESPONSE TEXT:", response.text)
 
         data = response.json()
-
         assert data["ok"] == 1
 
     def test_get_access_token_invalid_refresh(self):

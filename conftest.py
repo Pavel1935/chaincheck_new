@@ -8,56 +8,10 @@ import pytest
 from playwright.sync_api import sync_playwright
 from pages.login_page import LoginPage
 from contextlib import suppress
+import json
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
-
-
-# @pytest.fixture(scope="session")
-# def tokens():
-#     #login
-#     requests.post(
-#         f"{Constants.API_URL}/auth/login",
-#         json={"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"}
-#     ).raise_for_status()
-#
-#     code = get_verification_code(retries=60, delay=0.5)
-#     print(f"[Verification code] Received: {code}")
-#
-#     verify_url = Constants.API_URL + "/auth/verify-email"
-#     body = {
-#             "email": Constants.EMAIL,
-#             "code": code
-#         }
-#
-#     verify_response = requests.post(verify_url, json=body)
-#     verify_response.raise_for_status()
-#     print("[VERIFY] RESPONSE:", verify_response.text)
-#
-#     data = verify_response.json()
-#     assert data.get("ok") == 1, f"Verify failed: {data}"
-#
-#     access_token = data.get("access-token")
-#     refresh_token = data.get("refresh_token")
-#
-#     print(f"[TOKENS] Access: {access_token}")
-#     print(f"[TOKENS] Refresh: {refresh_token}")
-#
-#     creds = {
-#         "access_token": data.get("access-token"),
-#         "refresh_token": verify_response.cookies.get("refresh_token")
-#     }
-#
-#     yield creds
-#
-#     #logout
-#     with suppress(Exception):
-#         requests.get(
-#             f"{Constants.API_URL}/logout",
-#             headers={"Authorization": f"Bearer {creds['access_token']}"},
-#             cookies={"refresh_token": creds["refresh_token"]},
-#             json={}
-#         )
 
 @pytest.fixture(scope="session")
 def tokens():
@@ -123,11 +77,9 @@ def get_access_token(tokens):
     }
 
     response = requests.post(url, headers=headers, data=payload)
-
     print("RESPONSE TEXT:", response.text)
 
     data = response.json()
-
     return data["access-token"]
 
 
@@ -219,9 +171,54 @@ def login_page():
         logger.info("Закрытие браузера")
         browser.close()
 
-
 @pytest.fixture
 def verification_code_redis():
     def _get(email: str) -> str:
         return get_verification_code(email=email)
     return _get
+
+@pytest.fixture
+def mock_auth(login_page):
+    """
+    Мок авторизации для UI:
+    - не дергает Redis
+    - не ждёт 120 сек
+    - возвращает те же поля, что и реальный бекенд
+    Используй эту фикстуру ТОЛЬКО в тех тестах, где нужна "повторная" авторизация.
+    """
+    page = login_page.page
+
+    # Подгони пути, если отличаются (ниже — твой паттерн из кода /api/v1)
+    LOGIN_URL_PATTERN = "**/api/v1/auth/login"
+    VERIFY_URL_PATTERN = "**/api/v1/auth/verify-email"
+
+
+    # 1) Мокаем отправку кода: "ок, отправили"
+    def login_handler(route, request):
+        body = {"ok": 1, "message": "code sent"}
+        route.fulfill(
+            status=200,
+            headers={"content-type": "application/json"},
+            body=json.dumps(body)
+        )
+
+    # 2) Мокаем подтверждение кода: "ок, авторизован"
+    def verify_handler(route, request):
+        # ВАЖНО: поле называется "access-token" (с дефисом) — как у тебя в реальном ответе
+        body = {"ok": 1, "access-token": "FAKE_ACCESS_TOKEN_FOR_UI"}
+        headers = {
+            "content-type": "application/json",
+            # Имитируем куку рефреша, если фронт на неё рассчитывает
+            "set-cookie": "refresh_token=FAKE_REFRESH_TOKEN; Path=/; HttpOnly; Secure; SameSite=Lax"
+        }
+        route.fulfill(status=200, headers=headers, body=json.dumps(body))
+
+    page.route(LOGIN_URL_PATTERN, login_handler)
+    page.route(VERIFY_URL_PATTERN, verify_handler)
+
+    try:
+        yield
+    finally:
+        # Чистим маршруты после теста, чтобы моки не утекали в другие тесты
+        page.unroute(LOGIN_URL_PATTERN)
+        page.unroute(VERIFY_URL_PATTERN)

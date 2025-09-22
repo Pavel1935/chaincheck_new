@@ -7,11 +7,9 @@ class TestLogin:
     def test_login(self):
 
         url = Constants.API_URL + "/auth/login"
-
         payload = {
             "email": "oukb1147@gmail.com",
             "recaptcha_token": "SpartakChampion"
-
             }
 
         response = requests.post(url, json=payload)
@@ -37,7 +35,6 @@ class TestLogin:
     def test_login_without_space(self):
 
         url = Constants.API_URL + "/auth/login"
-
         payload = {
               "email": "support-team@company name.net"
             }
@@ -49,7 +46,7 @@ class TestLogin:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_login_without_dog_and_domen(self):
+    def test_login_without_dog_and_domain(self):
 
         url = Constants.API_URL + "/auth/login"
 
@@ -64,7 +61,7 @@ class TestLogin:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_login_without_incorrect_domen(self):
+    def test_login_without_incorrect_domain(self):
 
         url = Constants.API_URL + "/auth/login"
 
@@ -94,7 +91,7 @@ class TestLogin:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_login_domen_shorter_than_two_characters(self):
+    def test_login_domain_shorter_than_two_characters(self):
 
         url = Constants.API_URL + "/auth/login"
 
@@ -109,7 +106,7 @@ class TestLogin:
         assert data["ok"] == 0
         assert data["error"] == "INVALID_EMAIL"
 
-    def test_login_domen_two_point(self):
+    def test_login_domain_two_point(self):
 
         url = Constants.API_URL + "/auth/login"
 
@@ -124,7 +121,7 @@ class TestLogin:
         assert data["ok"] == 0
         assert data["error"] == "INVALID_EMAIL"
 
-    def test_login_domen_invalid_domen_name(self):
+    def test_login_invalid_domain_name(self):
 
         url = Constants.API_URL + "/auth/login"
 
@@ -139,7 +136,7 @@ class TestLogin:
         assert data["ok"] == 0
         assert data["error"] == "INVALID_EMAIL"
 
-    def test_login_domen_invalid_domen2_name(self):
+    def test_login_invalid_domain2_name(self):
 
         url = Constants.API_URL + "/auth/login"
 
@@ -154,7 +151,7 @@ class TestLogin:
         assert data["ok"] == 0
         assert data["error"] == "INVALID_EMAIL"
 
-    def test_login_domen_inсorrect_domen(self):
+    def test_login_incorrect_domain(self):
 
         url = Constants.API_URL + "/auth/login"
 
@@ -169,11 +166,9 @@ class TestLogin:
         assert data["ok"] == 0
         assert data["error"] == "INVALID_EMAIL"
 
-
-    def test_login_domen_two_point_name(self):
+    def test_login_domain_two_point_name(self):
 
         url = Constants.API_URL + "/auth/login"
-
         payload = {
               "email": "te..st@mail.ru"
             }

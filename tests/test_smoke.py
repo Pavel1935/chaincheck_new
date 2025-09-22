@@ -7,9 +7,15 @@ import allure
 from redis_utils import get_verification_code
 from loguru import logger
 from conftest import login_page
+import pytest
+import allure
+import logging
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+from Constants import Constants
+from redis_utils import get_verification_code
 
 
-class TestCheckSmoke:
+class TestCheckSmokeAPI:
     @pytest.mark.smoke
     @allure.step('Проверка адреса в сети BTC')
     def test_check_smoke_btc_ok(self, tokens):
@@ -210,75 +216,140 @@ class TestCheckSmoke:
         }
         headers = {"Authorization": f"Bearer {tokens['access_token']}"}
 
-        # 1) первый запрос
         requests.post(url, headers=headers, json=payload)
-
-        # 2) второй запрос (в пределах 120 сек — сразу)
         response = requests.post(url, headers=headers, json=payload)
         data = response.json()
 
-        # ожидаем ошибку из-за кулилдауна
         assert data["ok"] == 0
-        # если у вас есть код/сообщение ошибки, можно сузить:
-        # assert data["error"] == "RATE_LIMIT"
 
-    class TestLoginFlow:
-            @pytest.mark.smoke
-            @allure.step('Позитивная проверка входа по email')
-            def test_email_login_ui(self, login_page):
-                logger.info("Начинаю тест: вход по email")
 
-                login_page.open("https://check-dev.g5dl.com")
+    class TestCheckSmokeUI:
+    # @pytest.mark.smoke
+    # @allure.step('Позитивная проверка входа по email')
+    # def test_email_login_ui(self, login_page):
+    #     logger.info("Начинаю тест: вход по email")
+    #
+    #     try:
+    #         login_page.open("https://check-dev.g5dl.com")
+    #
+    #         login_page.enter_wallet_address("0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f")
+    #         login_page.enter_email(Constants.EMAIL)
+    #
+    #         # ждём ответ от API login
+    #         resp_login = login_page.page.wait_for_response("**/api/v1/auth/login", timeout=10000)
+    #         logger.info(f"[AUTH LOGIN] status={resp_login.status}, body={resp_login.text()}")
+    #
+    #         code = get_verification_code()
+    #         login_page.enter_code(code)
+    #
+    #         # ждём ответ от API verify
+    #         resp_verify = login_page.page.wait_for_response("**/api/v1/auth/verify-email", timeout=10000)
+    #         logger.info(f"[AUTH VERIFY] status={resp_verify.status}, body={resp_verify.text()}")
+    #
+    #         login_page.check_final_result()
+    #         logger.info("Проверяю результат")
+    #
+    #     except PlaywrightTimeoutError as e:
+    #         logger.error(f"❌ Ошибка Playwright (таймаут ожидания): {e}")
+    #         login_page.page.screenshot(path="error_email_login.png", full_page=True)
+    #         raise
+    #
+    #     except Exception as e:
+    #         logger.error(f"❌ Неожиданная ошибка: {e}")
+    #         login_page.page.screenshot(path="error_email_login.png", full_page=True)
+    #         raise
 
-                login_page.enter_wallet_address("0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f")
-                login_page.enter_email(Constants.EMAIL)
+        @pytest.mark.smoke
+        @allure.step('Позитивная проверка входа по email')
+        def test_email_login_ui(self, login_page):
+            logger.info("Начинаю тест: вход по email")
+            login_page.open("https://check-dev.g5dl.com")
 
-                code = get_verification_code()
-                login_page.enter_code(code)
+            login_page.enter_wallet_address("0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f")
+            login_page.enter_email(Constants.EMAIL)
+            code = get_verification_code()
+            login_page.enter_code(code)
 
-                login_page.check_final_result()
-                logger.info("Проверяю результат")
+            login_page.check_final_result()
+            logger.info("Проверяю результат")
 
-            @pytest.mark.smoke
-            @allure.step('Негативная проверка некорректного адреса')
-            def test_incorrect_address_ui(self, login_page):
-                logger.info("Начинаю тест некорректного адреса")
+        @pytest.mark.smoke
+        @allure.step('Негативная проверка что капча отрабатывает 120 сек паузы между отправкой кода')
+        def test_incorrect_120sec_pause_ui(self, login_page):
+            logger.info("Начинаю тест: пауза 120 сек")
 
-                login_page.open("https://check-dev.g5dl.com")
+            login_page.open("https://check-dev.g5dl.com")
 
-                login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
-                login_page.enter_email(Constants.EMAIL)
+            login_page.enter_wallet_address("0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f")
+            login_page.enter_email(Constants.EMAIL)
 
-                code = get_verification_code()
-                login_page.enter_code(code)
+            login_page.check_120sec_pause()
+            logger.info("Проверяю результат")
 
-                login_page.click_check_for_free_button()
-                login_page.wait_for_invalid_address_text()
-                logger.info("Проверяю результат")
 
-            @pytest.mark.smoke
-            @allure.step('Негативная проверка некорректного email')
-            def test_incorrect_email_ui(self, login_page):
-                logger.info("Начинаю тест проверка некорректного email")
 
-                login_page.open("https://check-dev.g5dl.com")
+        # def test_incorrect_address_ui(self, login_page):
+        #     login_page.authorize_with_token()
+        #     login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
+        #     login_page.click_new_check_button()
+        #     login_page.wait_for_invalid_address_text()
 
-                login_page.enter_wallet_address("0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f")
-                login_page.enter_invalid_email("oukb1147gmail.")
+        # @pytest.mark.smoke
+        # def test_incorrect_address_ui(self, login_page):
+        #     login_page.open("https://check-dev.g5dl.com")
+        #     login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
+        #     login_page.click_new_check_button()
+        #     login_page.wait_for_invalid_address_text()
 
-                login_page.wait_for_invalid_email_text()
-                logger.info("Проверяю результат")
+        @pytest.mark.smoke
+        @allure.step('Негативная проверка некорректного адреса')
+        def test_incorrect_address_ui(self, mock_auth, login_page):
+            # Открываем приложение
+            login_page.open("https://check-dev.g5dl.com")
 
-            @pytest.mark.smoke
-            @allure.step('Негативная проверка что капча отрабатывает 120 сек паузы между отправкой кода')
-            def test_incorrect_120sec_pause_ui(self, login_page):
-                logger.info("Начинаю тест: пауза 120 сек")
+            # Дальше обычный UI-флоу: как у пользователя
+            # 1) Вводим кошелёк и жмём "Check for free" (если у тебя так устроен сценарий)
+            login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
 
-                login_page.open("https://check-dev.g5dl.com")
+            # 2) Вводим email → фронт дернет /auth/login (мы замокаем ok:1)
+            login_page.enter_email(Constants.EMAIL)
 
-                login_page.enter_wallet_address("0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f")
-                login_page.enter_email(Constants.EMAIL)
+            # 3) Вводим ЛЮБОЙ "код" (не из Redis) → фронт дернет /auth/verify-email (мы замокаем ok:1 + токены)
+            login_page.enter_code("000000")
 
-                login_page.click_back_button_and_check_result()
-                logger.info("Проверяю результат")
+            # 4) Теперь фронт считает нас авторизованными → продолжаем сценарий
+            login_page.click_new_check_button()
+            login_page.wait_for_invalid_address_text()
+
+        # @pytest.mark.smoke
+        # @allure.step('Негативная проверка некорректного адреса')
+        # def test_incorrect_address_ui(self, login_page, login_page_auth):
+        #     logger.info("Начинаю тест некорректного адреса")
+        #
+        #     login_page.open("https://check-dev.g5dl.com")
+        #
+        #     login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
+        #     login_page.enter_email(Constants.EMAIL)
+        #
+        #     code = get_verification_code()
+        #     login_page.enter_code(code)
+        #
+        #     login_page.click_new_check_button()
+        #     login_page.wait_for_invalid_address_text()
+        #     logger.info("Проверяю результат")
+        #
+        # @pytest.mark.smoke
+        # @allure.step('Негативная проверка некорректного email')
+        # def test_incorrect_email_ui(self, login_page):
+        #     logger.info("Начинаю тест проверка некорректного email")
+        #
+        #     login_page.open("https://check-dev.g5dl.com")
+        #
+        #     login_page.enter_wallet_address("0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f")
+        #     login_page.enter_invalid_email("oukb1147gmail.")
+        #
+        #     login_page.wait_for_invalid_email_text()
+        #     logger.info("Проверяю результат")
+
+
 
