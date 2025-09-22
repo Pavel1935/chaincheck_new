@@ -3,7 +3,6 @@ from Constants import Constants
 
 
 class TestLogin:
-
     def test_login(self):
 
         url = Constants.API_URL + "/auth/login"

@@ -178,47 +178,62 @@ def verification_code_redis():
     return _get
 
 @pytest.fixture
-def mock_auth(login_page):
+def mock_auth(login_page, tokens):
     """
     Мок авторизации для UI:
-    - не дергает Redis
-    - не ждёт 120 сек
-    - возвращает те же поля, что и реальный бекенд
-    Используй эту фикстуру ТОЛЬКО в тех тестах, где нужна "повторная" авторизация.
+    - перехватывает /auth/login и /auth/verify-email
+    - возвращает валидные токены из фикстуры tokens
+    - логирует запросы и ответы
     """
     page = login_page.page
 
-    # Подгони пути, если отличаются (ниже — твой паттерн из кода /api/v1)
-    LOGIN_URL_PATTERN = "**/api/v1/auth/login"
-    VERIFY_URL_PATTERN = "**/api/v1/auth/verify-email"
+    LOGIN_URL_PATTERN = "**/auth/login"
+    VERIFY_URL_PATTERN = "**/auth/verify-email"
 
-
-    # 1) Мокаем отправку кода: "ок, отправили"
     def login_handler(route, request):
-        body = {"ok": 1, "message": "code sent"}
+        try:
+            payload = request.post_data_json
+            email = payload.get("email")
+            recaptcha = payload.get("recaptcha_token")
+            logger.info(f"[MOCK LOGIN] email={email}, recaptcha={recaptcha}")
+        except Exception as e:
+            logger.warning(f"[MOCK LOGIN] не удалось распарсить тело запроса: {e}")
+
+        # Возвращаем тот же ответ, что даёт реальный бекенд
+        body = {"ok": 1}
+        logger.info(f"[MOCK LOGIN RESPONSE] {body}")
         route.fulfill(
             status=200,
             headers={"content-type": "application/json"},
             body=json.dumps(body)
         )
 
-    # 2) Мокаем подтверждение кода: "ок, авторизован"
     def verify_handler(route, request):
-        # ВАЖНО: поле называется "access-token" (с дефисом) — как у тебя в реальном ответе
-        body = {"ok": 1, "access-token": "FAKE_ACCESS_TOKEN_FOR_UI"}
+        try:
+            payload = request.post_data_json
+            email = payload.get("email")
+            code = payload.get("code")
+            logger.info(f"[MOCK VERIFY] email={email}, code={code}")
+        except Exception as e:
+            logger.warning(f"[MOCK VERIFY] не удалось распарсить тело запроса: {e}")
+
+        body = {
+            "ok": 1,
+            "access-token": tokens["access_token"]
+        }
         headers = {
             "content-type": "application/json",
-            # Имитируем куку рефреша, если фронт на неё рассчитывает
-            "set-cookie": "refresh_token=FAKE_REFRESH_TOKEN; Path=/; HttpOnly; Secure; SameSite=Lax"
+            "set-cookie": f"refresh_token={tokens['refresh_token']}; Path=/; HttpOnly; Secure; SameSite=Lax"
         }
+        logger.info(f"[MOCK VERIFY RESPONSE] {body}, headers={headers}")
         route.fulfill(status=200, headers=headers, body=json.dumps(body))
 
+    # Вешаем роуты
     page.route(LOGIN_URL_PATTERN, login_handler)
     page.route(VERIFY_URL_PATTERN, verify_handler)
 
-    try:
-        yield
-    finally:
-        # Чистим маршруты после теста, чтобы моки не утекали в другие тесты
-        page.unroute(LOGIN_URL_PATTERN)
-        page.unroute(VERIFY_URL_PATTERN)
+    yield
+
+    # После теста снимаем, чтобы не протекли в другие
+    page.unroute(LOGIN_URL_PATTERN)
+    page.unroute(VERIFY_URL_PATTERN)

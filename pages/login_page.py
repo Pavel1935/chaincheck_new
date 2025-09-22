@@ -28,10 +28,10 @@ class LoginPage(BasePage):
         self.page.locator(LoginLocators.MAIN_BUTTON).wait_for()
         expect(self.page.locator(LoginLocators.MAIN_BUTTON)).to_be_enabled()
 
-    def click_check_for_free_button(self,timeout=10000):
+    def click_check_for_free_button(self):
         self.page.locator(LoginLocators.CHECK_FOR_FREE_BUTTON).click()
 
-    def click_new_check_button(self,timeout=10000):
+    def click_new_check_button(self):
         self.page.locator("#secCheck").get_by_role("button", name="New check").click()
 
     def wait_for_invalid_address_text(self,timeout=10000):
@@ -68,28 +68,6 @@ class LoginPage(BasePage):
         locator = self.page.get_by_text("Error: unknown auth error")
         expect(locator).to_be_visible(timeout=5000)
 
-    def authorize_with_token(self, url: str = "https://check-dev.g5dl.com"):
-        """
-        Авторизация через заранее полученный токен (без ввода email и кода).
-        Работает только если фикстура login_page уже проставила токен в браузер.
-        """
-        self.page.goto(url)
-        # можно проверить, что мы реально авторизованы
-        expect(self.page.locator(LoginLocators.CHECK_FOR_FREE_BUTTON)).to_be_visible(timeout=5000)
-        # expect(self.page.locator(LoginLocators.NEW_CHECK_BUTTON)).to_be_visible(timeout=5000)
-        # expect(self.page.locator("#secCheck").get_by_role("button", name="New check")).to_be_visible(timeout=5000)
-
-    # def _log_auth_response(self, response):
-    #     if "/auth/login" in response.url or "/auth/verify-email" in response.url:
-    #         status = response.status
-    #         try:
-    #             body = response.text()
-    #         except Exception:
-    #             body = "<нельзя прочитать тело>"
-    #         if status >= 400:
-    #             logger.error(f"[HTTP ERROR] {status} {response.url}\nBODY: {body}")
-    #         else:
-    #             logger.info(f"[HTTP OK] {status} {response.url}\nBODY: {body}")
 
 
 

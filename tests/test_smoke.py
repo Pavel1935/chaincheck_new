@@ -287,13 +287,6 @@ class TestCheckSmokeAPI:
             logger.info("Проверяю результат")
 
 
-
-        # def test_incorrect_address_ui(self, login_page):
-        #     login_page.authorize_with_token()
-        #     login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
-        #     login_page.click_new_check_button()
-        #     login_page.wait_for_invalid_address_text()
-
         # @pytest.mark.smoke
         # def test_incorrect_address_ui(self, login_page):
         #     login_page.open("https://check-dev.g5dl.com")
@@ -301,25 +294,16 @@ class TestCheckSmokeAPI:
         #     login_page.click_new_check_button()
         #     login_page.wait_for_invalid_address_text()
 
-        @pytest.mark.smoke
-        @allure.step('Негативная проверка некорректного адреса')
-        def test_incorrect_address_ui(self, mock_auth, login_page):
-            # Открываем приложение
-            login_page.open("https://check-dev.g5dl.com")
+    @pytest.mark.smoke
+    @allure.step('Негативная проверка некорректного адреса (с замоканной авторизацией)')
+    def test_incorrect_address_ui(self, mock_auth, login_page):
+        login_page.open("https://check-dev.g5dl.com")
 
-            # Дальше обычный UI-флоу: как у пользователя
-            # 1) Вводим кошелёк и жмём "Check for free" (если у тебя так устроен сценарий)
-            login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
-
-            # 2) Вводим email → фронт дернет /auth/login (мы замокаем ok:1)
-            login_page.enter_email(Constants.EMAIL)
-
-            # 3) Вводим ЛЮБОЙ "код" (не из Redis) → фронт дернет /auth/verify-email (мы замокаем ok:1 + токены)
-            login_page.enter_code("000000")
-
-            # 4) Теперь фронт считает нас авторизованными → продолжаем сценарий
-            login_page.click_new_check_button()
-            login_page.wait_for_invalid_address_text()
+        login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
+        login_page.enter_email(Constants.EMAIL)  # → мок /auth/login
+        login_page.enter_code("000000")  # → мок /auth/verify-email
+        login_page.click_new_check_button()
+        login_page.wait_for_invalid_address_text()
 
         # @pytest.mark.smoke
         # @allure.step('Негативная проверка некорректного адреса')
