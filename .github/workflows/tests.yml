@@ -8,37 +8,44 @@ on:
     - cron: "0 5 * * *"          # 05:00 UTC (08:00 по Москве). Поменяй при необходимости
 
 jobs:
-  smoke:                          # Один job: smoke
-    runs-on: ubuntu-latest        # GitHub выдаёт виртуалку, НО job внутри контейнера (ниже)
-    container:                    # Всё выполнение идёт в Docker-образе Playwright+Python
+  smoke:
+    runs-on: ubuntu-latest
+    container:
       image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
-      # options ниже — полезные флаги для стабильности браузеров в CI
       options: --ipc=host --shm-size=1g
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4 # Шаг 1: получить код репозитория
+        uses: actions/checkout@v4
+        # Шаг 1: получить код репозитория
 
       - name: Install dependencies
         run: pip install -r requirements.txt
         # Шаг 2: поставить Python-зависимости проекта
         # (образ уже содержит браузеры и системные либы для Playwright)
 
-      - name: Run SMOKE tests
-        run: pytest -m smoke -q --alluredir=allure-results
-        # Шаг 3: запустить ТОЛЬКО smoke-тесты
-        # -m smoke       → фильтр по маркеру @pytest.mark.smoke
-        # -q             → компактный вывод
-        # (обрати внимание: НЕТ --maxfail=1, прогон не прерывается при первом фейле)
-        # --alluredir    → сохранить результаты для Allure в папку allure-results
+      - name: Run API smoke tests
+        run: pytest -m "smoke and api" -q --alluredir=allure-results/api
+        # Шаг 3: запустить ТОЛЬКО smoke-тесты с маркером api
+        # результаты сохраняем отдельно (allure-results/api)
+
+      - name: Wait for 5 minutes before UI tests
+        run: sleep 300
+        # Шаг 4: подождать 5 минут (капча и лимиты на почту успеют сброситься)
+
+      - name: Run UI smoke tests
+        run: pytest -m "smoke and ui" -q --alluredir=allure-results/ui
+        # Шаг 5: запустить ТОЛЬКО smoke-тесты с маркером ui
+        # результаты сохраняем отдельно (allure-results/ui)
 
       - name: Upload Allure results
-        if: always()              # Загружать артефакты даже если тесты упали
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: allure-results
-          if-no-files-found: warn # Не падаем, если папки вдруг нет
+          if-no-files-found: warn
+        # Шаг 6: загрузить результаты Allure (и api, и ui подпапки)
 
       - name: Upload UI artifacts (screenshots/traces/videos)
         if: always()
@@ -49,5 +56,5 @@ jobs:
             screenshots
             traces
             videos
-          if-no-files-found: ignore   # Эти папки появляются только если ты их создаёшь в тестах
-
+          if-no-files-found: ignore
+        # Шаг 7: артефакты с UI тестов (если тесты их создают)

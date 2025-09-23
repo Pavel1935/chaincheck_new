@@ -24,12 +24,12 @@ class LoginPage(BasePage):
 
     def check_final_result(self):
         # self.page.locator(LoginLocators.NEW_CHECK_BUTTON).click()
-        self.page.locator("#secCheck").get_by_role("button", name="New check").click()
+        self.page.locator("#secCheck").get_by_role("button", name="Check for Free").click()
         self.page.locator(LoginLocators.MAIN_BUTTON).wait_for()
         expect(self.page.locator(LoginLocators.MAIN_BUTTON)).to_be_enabled()
 
     def click_check_for_free_button(self):
-        self.page.locator(LoginLocators.CHECK_FOR_FREE_BUTTON).click()
+        self.page.locator("#secCheck").get_by_role("button", name="Check for Free").click()
 
     def click_new_check_button(self):
         self.page.locator("#secCheck").get_by_role("button", name="New check").click()
