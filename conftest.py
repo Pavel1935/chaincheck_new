@@ -159,16 +159,26 @@ def wait_for_report_ready(report_id, headers, base_url, timeout=10, interval=0.5
 @pytest.fixture
 def login_page():
     logger.info("Запуск Playwright и браузера")
+
+    # В CI (GitHub Actions переменная CI=true) -> headless
+    is_ci = os.getenv("CI", "false").lower() == "true"
+    headless = True if is_ci else False
+    slow_mo = int(os.getenv("SLOW_MO", "500"))
+
     with sync_playwright() as p:
         browser = p.chromium.launch(
-        headless=False,
-        slow_mo=500   # задержка 500 мс на каждый action
+            headless=headless,
+            slow_mo=slow_mo
         )
         context = browser.new_context()
         page = context.new_page()
+        login_page = LoginPage(page)
+
         logger.info("Создание объекта LoginPage")
-        yield LoginPage(page)
+        yield login_page
+
         logger.info("Закрытие браузера")
+        context.close()
         browser.close()
 
 @pytest.fixture
