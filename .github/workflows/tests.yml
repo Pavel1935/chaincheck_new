@@ -1,52 +1,127 @@
-name: Smoke tests                 # Имя workflow в GitHub Actions
+name: Smoke tests  # Имя workflow (видно в Actions)
 
 on:
-  push:                           # Запускать при пушах в main
-    branches: [ main ]
-  pull_request:                   # Запускать на каждый PR в main
-  schedule:                       # Автозапуск по расписанию (каждое утро)
-    - cron: "0 5 * * *"          # 05:00 UTC (08:00 по Москве). Поменяй при необходимости
+  push:
+    branches: [ main ]           # Запуск при пушах в main
+  pull_request:                  # Запуск на каждый PR в main
+  schedule:
+    - cron: "0 5 * * *"          # Автозапуск по расписанию: 05:00 UTC (08:00 МСК)
 
 jobs:
   smoke:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest       # Хост-раннер GitHub
+    # Используем контейнер Playwright с готовыми браузерами
     container:
       image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
       options: --ipc=host --shm-size=1g
 
+    # Разрешаем публикацию на GitHub Pages (для "опционального" шага ниже)
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
     steps:
+      # 1) Забираем код репозитория
       - name: Checkout repository
         uses: actions/checkout@v4
-        # Шаг 1: получить код репозитория
 
+      # 2) Ставим Python-зависимости проекта (в т.ч. allure-pytest из requirements.txt)
       - name: Install dependencies
         run: pip install -r requirements.txt
-        # Шаг 2: поставить Python-зависимости проекта
-        # (образ уже содержит браузеры и системные либы для Playwright)
 
+      # 3) Ставим Allure CLI внутри контейнера, чтобы генерировать HTML-отчёт
+      #    Allure CLI — это Java-приложение; ставим JRE + качаем дистрибутив
+      - name: Install Allure CLI
+        run: |
+          apt-get update
+          apt-get install -y default-jre wget unzip
+          ALLURE_VERSION=2.29.0
+          wget -q https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.zip -O /tmp/allure.zip
+          unzip -q /tmp/allure.zip -d /opt/
+          ln -sf /opt/allure-${ALLURE_VERSION}/bin/allure /usr/bin/allure
+          allure --version
+
+      # 4) (Опционально, но полезно) — чистим папку результатов перед первым прогоном
+      - name: Prepare allure-results
+        run: rm -rf allure-results && mkdir -p allure-results
+
+      # 5) Добавляем метаданные для красивой "шапки" отчёта Allure (чтобы не было UNKNOWN)
+      - name: Add Allure metadata (executor & environment)
+        run: |
+          mkdir -p allure-results
+          cat > allure-results/executor.json << 'JSON'
+          {
+            "name": "GitHub Actions",
+            "type": "github",
+            "reportName": "Smoke tests",
+            "buildName": "${{ github.workflow }} #${{ github.run_number }}",
+            "buildUrl": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "environment": "${{ github.ref_name }}"
+          }
+          JSON
+          # Любые свои переменные окружения можно добавить сюда:
+          echo "branch=${{ github.ref_name }}" >> allure-results/environment.properties
+          echo "runner=ubuntu-latest" >> allure-results/environment.properties
+
+      # 6) Запускаем API-смоки. Ключи:
+      #    --alluredir=allure-results     -> пишем в ОДНУ папку
+      #    --clean-alluredir              -> чистим только ПЕРЕД ПЕРВЫМ прогоном
+      #    -vv -ra                        -> подробный вывод + сводка упавших/пропущенных в логах CI
       - name: Run API smoke tests
-        run: pytest -m "smoke and api" -q --alluredir=allure-results/api
-        # Шаг 3: запустить ТОЛЬКО smoke-тесты с маркером api
-        # результаты сохраняем отдельно (allure-results/api)
+        run: |
+          pytest -m "smoke and api" -vv -ra \
+                 --alluredir=allure-results \
+                 --clean-alluredir
 
-      - name: Wait for 5 minutes before UI tests
+      # 7) Иногда полезно сделать паузу перед UI (капча/лимиты/почта)
+      - name: Wait before UI tests
         run: sleep 300
-        # Шаг 4: подождать 5 минут (капча и лимиты на почту успеют сброситься)
 
+      # 8) Запускаем UI-смоки. Пишем в ту же папку allure-results (объединяем результаты)
       - name: Run UI smoke tests
-        run: pytest -m "smoke and ui" -q --alluredir=allure-results/ui
-        # Шаг 5: запустить ТОЛЬКО smoke-тесты с маркером ui
-        # результаты сохраняем отдельно (allure-results/ui)
+        run: |
+          pytest -m "smoke and ui" -vv -ra \
+                 --alluredir=allure-results
 
-      - name: Upload Allure results
+      # 9) Всегда грузим «сырые» результаты (на случай локальной генерации отчёта)
+      - name: Upload Allure results (raw)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: allure-results
-          if-no-files-found: warn
-        # Шаг 6: загрузить результаты Allure (и api, и ui подпапки)
+          if-no-files-found: error
 
+      # 10) Генерируем красивый HTML-отчёт прямо в CI
+      - name: Generate Allure HTML report
+        if: always()
+        run: |
+          allure generate allure-results -o allure-report --clean
+          # Для дебага можно посмотреть, что внутри:
+          ls -la allure-report | head -n 50
+
+      # 11) Кладём готовый HTML-отчёт как артефакт (скачал zip -> открыл index.html)
+      - name: Upload Allure HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report
+          if-no-files-found: error
+
+      # 12) (Опционально) Публикуем Allure отчет на GitHub Pages (постоянная ссылка)
+      #     Этот шаг можно выключить, если не нужен публичный хостинг отчёта.
+      - name: Deploy Allure Report to GitHub Pages
+        if: always() && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
+          publish_branch: gh-pages
+          force_orphan: true
+
+      # 13) (Опционально) Загружаем артефакты UI (скриншоты/трейсы/видео), если ты их сохраняешь
       - name: Upload UI artifacts (screenshots/traces/videos)
         if: always()
         uses: actions/upload-artifact@v4
@@ -57,4 +132,3 @@ jobs:
             traces
             videos
           if-no-files-found: ignore
-        # Шаг 7: артефакты с UI тестов (если тесты их создают)
