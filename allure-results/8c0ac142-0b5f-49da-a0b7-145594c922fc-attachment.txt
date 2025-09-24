@@ -1,0 +1,3 @@
+[32mINFO    [0m conftest:conftest.py:161 Запуск Playwright и браузера
+[32mINFO    [0m conftest:conftest.py:169 Создание объекта LoginPage
+[32mINFO    [0m conftest:conftest.py:171 Закрытие браузера

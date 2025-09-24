@@ -93,22 +93,17 @@ jobs:
           path: allure-results
           if-no-files-found: error
 
-      # 10) Генерируем красивый HTML-отчёт прямо в CI
+
+            # 10) Генерируем красивый HTML-отчёт прямо в CI
       - name: Generate Allure HTML report
         if: always()
         run: |
+          export ALLURE_BASE_URL="/${GITHUB_REPOSITORY#*/}/"
           allure generate allure-results -o allure-report --clean
           # Для дебага можно посмотреть, что внутри:
           ls -la allure-report | head -n 50
 
-      # 11) Кладём готовый HTML-отчёт как артефакт (скачал zip -> открыл index.html)
-      - name: Upload Allure HTML report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: allure-report
-          if-no-files-found: error
+          
 
       # 12) (Опционально) Публикуем Allure отчет на GitHub Pages (постоянная ссылка)
       #     Этот шаг можно выключить, если не нужен публичный хостинг отчёта.
@@ -132,3 +127,12 @@ jobs:
             traces
             videos
           if-no-files-found: ignore
+
+
+      - name: Comment report URL
+        if: always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: smoke-report
+          message: "✅ Allure report: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+

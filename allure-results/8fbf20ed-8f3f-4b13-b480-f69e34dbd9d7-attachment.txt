@@ -1,0 +1,2 @@
+2025-09-24 16:16:07.974 | INFO     | tests.test_smoke:test_check_smoke_btc_ok:17 - Начинаю тест: проверка адреса в сети BTC
+2025-09-24 16:16:17.552 | INFO     | tests.test_smoke:test_check_smoke_btc_ok:44 - Проверяю результат
