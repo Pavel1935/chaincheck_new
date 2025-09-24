@@ -23,7 +23,11 @@ def tokens():
 
     login_response = requests.post(login_url, json=payload)
     login_response.raise_for_status()
-    print("[LOGIN] RESPONSE:", login_response.text)
+    data = login_response.json()
+    print("[LOGIN] RESPONSE:", data)
+
+    if not data.get("ok"):
+        pytest.fail(f"Login failed for {Constants.EMAIL}: {data}")
 
     from redis_utils import get_verification_code
     code = get_verification_code()
@@ -48,10 +52,6 @@ def tokens():
     print(f"[TOKENS] Access: {access_token}")
     print(f"[TOKENS] Refresh: {refresh_token}")
 
-    # return {
-    #     "access_token": access_token,
-    #     "refresh_token": refresh_token
-    # }
     creds = {
                 "access_token": data.get("access-token"),
                 "refresh_token": verify_response.cookies.get("refresh_token")
@@ -63,7 +63,8 @@ def tokens():
                     f"{Constants.API_URL}/logout",
                     headers={"Authorization": f"Bearer {creds['access_token']}"},
                     cookies={"refresh_token": creds["refresh_token"]},
-                    json={}                    )
+                    json={}
+                 )
 
 
 @pytest.fixture

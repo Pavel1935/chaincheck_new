@@ -1,3 +1,6 @@
+import os
+
+import pytest
 import redis
 import time
 
@@ -14,15 +17,20 @@ def get_redis_connection():
     )
 
 
-def get_verification_code(retries=10, delay=1) -> str:
+def get_verification_code(email=None, retries=None, delay=None) -> str:
     """Пытается получить код подтверждения из Redis с повторными попытками"""
     redis_conn = get_redis_connection()
 
+    retries = retries or int(os.getenv("REDIS_RETRIES", "30"))  # по умолчанию ждём до 30 секунд
+    delay = delay or int(os.getenv("REDIS_DELAY", "1"))
+
     for attempt in range(retries):
-        code = redis_conn.get(REDIS_KEY)
+        code = redis_conn.get(REDIS_KEY if email is None else f"ea:{email}")
         if code:
             print(f"[Redis] Код из Redis: {code}")
             return code
         time.sleep(delay)
 
-    raise TimeoutError(f"Код не найден в Redis по ключу {REDIS_KEY} после {retries} попыток")
+    pytest.fail(f"Код не найден в Redis по ключу {REDIS_KEY} после {retries*delay} секунд")
+
+
