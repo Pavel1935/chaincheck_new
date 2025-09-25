@@ -188,63 +188,62 @@ def verification_code_redis():
         return get_verification_code(email=email)
     return _get
 
+# @pytest.fixture
+# def mock_auth(tokens):
+#     """
+#     Мок авторизации для UI:
+#     - перехватывает /auth/login и /auth/verify-email
+#     - возвращает валидные токены из фикстуры tokens
+#     - логирует запросы и ответы
+#     """
+#     page = login_page.page
+#
+#     LOGIN_URL_PATTERN = "**/auth/login"
+#     VERIFY_URL_PATTERN = "**/auth/verify-email"
+#
+#     def login_handler(route, request):
+#         try:
+#             payload = request.post_data_json
+#             email = payload.get("email")
+#             recaptcha = payload.get("recaptcha_token")
+#             logger.info(f"[MOCK LOGIN] email={email}, recaptcha={recaptcha}")
+#         except Exception as e:
+#             logger.warning(f"[MOCK LOGIN] не удалось распарсить тело запроса: {e}")
+#
+#         # Возвращаем тот же ответ, что даёт реальный бекенд
+#         body = {"ok": 1}
+#         logger.info(f"[MOCK LOGIN RESPONSE] {body}")
+#         route.fulfill(
+#             status=200,
+#             headers={"content-type": "application/json"},
+#             body=json.dumps(body)
+#         )
 @pytest.fixture
-def mock_auth(login_page, tokens):
+def mock_auth(tokens):
     """
-    Мок авторизации для UI:
-    - перехватывает /auth/login и /auth/verify-email
-    - возвращает валидные токены из фикстуры tokens
-    - логирует запросы и ответы
+    Возвращает функцию, которую можно вызвать в тесте,
+    чтобы замокать авторизацию на конкретной странице.
     """
-    page = login_page.page
+    def _apply(page):
+        LOGIN_URL_PATTERN = "**/auth/login"
+        VERIFY_URL_PATTERN = "**/auth/verify-email"
 
-    LOGIN_URL_PATTERN = "**/auth/login"
-    VERIFY_URL_PATTERN = "**/auth/verify-email"
+        def login_handler(route, request):
+            route.fulfill(
+                status=200,
+                headers={"content-type": "application/json"},
+                body=json.dumps({"ok": 1})
+            )
 
-    def login_handler(route, request):
-        try:
-            payload = request.post_data_json
-            email = payload.get("email")
-            recaptcha = payload.get("recaptcha_token")
-            logger.info(f"[MOCK LOGIN] email={email}, recaptcha={recaptcha}")
-        except Exception as e:
-            logger.warning(f"[MOCK LOGIN] не удалось распарсить тело запроса: {e}")
+        def verify_handler(route, request):
+            body = {"ok": 1, "access-token": tokens["access_token"]}
+            headers = {
+                "content-type": "application/json",
+                "set-cookie": f"refresh_token={tokens['refresh_token']}; Path=/; HttpOnly; Secure; SameSite=Lax"
+            }
+            route.fulfill(status=200, headers=headers, body=json.dumps(body))
 
-        # Возвращаем тот же ответ, что даёт реальный бекенд
-        body = {"ok": 1}
-        logger.info(f"[MOCK LOGIN RESPONSE] {body}")
-        route.fulfill(
-            status=200,
-            headers={"content-type": "application/json"},
-            body=json.dumps(body)
-        )
+        page.route(LOGIN_URL_PATTERN, login_handler)
+        page.route(VERIFY_URL_PATTERN, verify_handler)
 
-    def verify_handler(route, request):
-        try:
-            payload = request.post_data_json
-            email = payload.get("email")
-            code = payload.get("code")
-            logger.info(f"[MOCK VERIFY] email={email}, code={code}")
-        except Exception as e:
-            logger.warning(f"[MOCK VERIFY] не удалось распарсить тело запроса: {e}")
-
-        body = {
-            "ok": 1,
-            "access-token": tokens["access_token"]
-        }
-        headers = {
-            "content-type": "application/json",
-            "set-cookie": f"refresh_token={tokens['refresh_token']}; Path=/; HttpOnly; Secure; SameSite=Lax"
-        }
-        logger.info(f"[MOCK VERIFY RESPONSE] {body}, headers={headers}")
-        route.fulfill(status=200, headers=headers, body=json.dumps(body))
-
-    # Вешаем роуты
-    page.route(LOGIN_URL_PATTERN, login_handler)
-    page.route(VERIFY_URL_PATTERN, verify_handler)
-
-    yield
-
-    # После теста снимаем, чтобы не протекли в другие
-    page.unroute(LOGIN_URL_PATTERN)
-    page.unroute(VERIFY_URL_PATTERN)
+    return _apply

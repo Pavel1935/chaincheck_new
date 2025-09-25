@@ -255,6 +255,8 @@ class TestCheckSmokeUI:
     @pytest.mark.ui
     @allure.step('Негативная проверка некорректного адреса (с замоканной авторизацией)')
     def test_incorrect_address_ui(self, mock_auth, login_page):
+        mock_auth(login_page.page)
+
         login_page.open("https://check-dev.g5dl.com")
         login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
         login_page.enter_email(Constants.EMAIL)  # → мок /auth/login
@@ -262,23 +264,7 @@ class TestCheckSmokeUI:
         login_page.click_check_for_free_button()
         login_page.wait_for_invalid_address_text()
 
-        # @pytest.mark.smoke
-        # @allure.step('Негативная проверка некорректного адреса')
-        # def test_incorrect_address_ui(self, login_page, login_page_auth):
-        #     logger.info("Начинаю тест некорректного адреса")
-        #
-        #     login_page.open("https://check-dev.g5dl.com")
-        #
-        #     login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
-        #     login_page.enter_email(Constants.EMAIL)
-        #
-        #     code = get_verification_code()
-        #     login_page.enter_code(code)
-        #
-        #     login_page.click_new_check_button()
-        #     login_page.wait_for_invalid_address_text()
-        #     logger.info("Проверяю результат")
-        #
+
         # @pytest.mark.smoke
         # @allure.step('Негативная проверка некорректного email')
         # def test_incorrect_email_ui(self, login_page):
