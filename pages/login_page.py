@@ -18,9 +18,7 @@ class LoginPage(BasePage):
         self.page.locator(LoginLocators.LOG_IN_BUTTON).click()
 
     def enter_code(self, code: str):
-        # self.page.on("response", self._log_auth_response)
         self.fill_code_by_indexed_inputs(LoginLocators.CODE_INPUTS, code)
-        # expect(self.page.locator(LoginLocators.NEW_CHECK_BUTTON)).to_be_enabled()
 
     def check_final_result(self):
         # self.page.locator(LoginLocators.NEW_CHECK_BUTTON).click()

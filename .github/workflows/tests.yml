@@ -60,7 +60,7 @@ jobs:
             "environment": "${{ github.ref_name }}"
           }
           JSON
-          # Любые свои переменные окружения можно добавить сюда:
+        # Любые свои переменные окружения можно добавить сюда:
           echo "branch=${{ github.ref_name }}" >> allure-results/environment.properties
           echo "runner=ubuntu-latest" >> allure-results/environment.properties
 

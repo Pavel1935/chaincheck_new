@@ -242,7 +242,6 @@ class TestCheckSmokeUI:
     @allure.step('Негативная проверка что капча отрабатывает 120 сек паузы между отправкой кода')
     def test_incorrect_120sec_pause_ui(self, login_page):
         logger.info("Начинаю тест: пауза 120 сек")
-
         login_page.open("https://check-dev.g5dl.com")
 
         login_page.enter_wallet_address("0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f")
@@ -254,12 +253,13 @@ class TestCheckSmokeUI:
     @pytest.mark.smoke
     @pytest.mark.ui
     @allure.step('Негативная проверка некорректного адреса (с замоканной авторизацией)')
-    def test_incorrect_address_ui(self, mock_auth, login_page):
-        mock_auth(login_page.page)
+    def test_incorrect_address_ui(self, login_page, mock_auth):
 
+        mock_auth(login_page.page)
         login_page.open("https://check-dev.g5dl.com")
+
         login_page.enter_wallet_address("111111110x36b12020B741A111111111722Ca21a0ef2B9E8977f8715b4f")
-        login_page.enter_email(Constants.EMAIL)  # → мок /auth/login
+        login_page.enter_email(Constants.MOCK_EMAIL)  # → мок /auth/login
         login_page.enter_code("000000")  # → мок /auth/verify-email
         login_page.click_check_for_free_button()
         login_page.wait_for_invalid_address_text()
