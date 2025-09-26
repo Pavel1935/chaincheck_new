@@ -46,7 +46,7 @@ jobs:
       - name: Prepare allure-results
         run: rm -rf allure-results && mkdir -p allure-results
 
-#       5) Добавляем метаданные для красивой "шапки" отчёта Allure (чтобы не было UNKNOWN)
+      # 5) (Опционально, но полезно) — чистим папку результатов перед первым прогоном
       - name: Add Allure metadata (executor & environment)
         run: |
           mkdir -p allure-results
