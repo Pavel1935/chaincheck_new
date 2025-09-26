@@ -49,7 +49,7 @@ jobs:
       - name: Add Allure metadata (executor & environment)
         run: |
           mkdir -p allure-results
-          cat > allure-results/executor.json << 'JSON'
+          cat > allure-results/executor.json <<'EOF'
           {
             "name": "GitHub Actions",
             "type": "github",
@@ -58,8 +58,9 @@ jobs:
             "buildUrl": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
             "environment": "${{ github.ref_name }}"
           }
-          JSON
-        # Любые свои переменные окружения можно добавить сюда:
+          EOF
+
+#           Добавляем properties (видны в Allure как Environment)
           echo "branch=${{ github.ref_name }}" >> allure-results/environment.properties
           echo "runner=ubuntu-latest" >> allure-results/environment.properties
 
