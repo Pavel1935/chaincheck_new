@@ -1,0 +1,7 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"failed","Sat Sep 27 05:09:18 GMT 2025","Sat Sep 27 05:09:18 GMT 2025","0","tests","test_smoke","TestCheckSmokeAPI","","","test_smoke_negative_api_incorrect_report_id",""
+"failed","Sat Sep 27 05:09:16 GMT 2025","Sat Sep 27 05:09:16 GMT 2025","0","tests","test_smoke","TestCheckSmokeAPI","","","test_check_smoke_bsc_ok",""
+"failed","Sat Sep 27 05:09:17 GMT 2025","Sat Sep 27 05:09:17 GMT 2025","0","tests","test_smoke","TestCheckSmokeAPI","","","test_check_smoke_ether_ok",""
+"passed","Sat Sep 27 05:09:12 GMT 2025","Sat Sep 27 05:09:15 GMT 2025","3738","tests","test_smoke","TestCheckSmokeAPI","","","test_check_smoke_btc_ok",""
+"failed","Sat Sep 27 05:09:18 GMT 2025","Sat Sep 27 05:09:18 GMT 2025","0","tests","test_smoke","TestCheckSmokeAPI","","","test_smoke_negative_api_old_access_token",""
+"failed","Sat Sep 27 05:09:17 GMT 2025","Sat Sep 27 05:09:17 GMT 2025","0","tests","test_smoke","TestCheckSmokeAPI","","","test_check_smoke_tron_ok",""
