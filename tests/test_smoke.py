@@ -9,11 +9,12 @@ from Constants import Constants
 from redis_utils import get_verification_code
 
 
+@pytest.mark.usefixtures("class_tokens")
 class TestCheckSmokeAPI:
     @pytest.mark.smoke
     @pytest.mark.api
     @allure.step('Проверка адреса в сети BTC')
-    def test_check_smoke_btc_ok(self, tokens):
+    def test_check_smoke_btc_ok(self, class_tokens):
         logger.info("Начинаю тест: проверка адреса в сети BTC")
         url = Constants.API_URL + "aml/check"
 
@@ -22,7 +23,7 @@ class TestCheckSmokeAPI:
             "network": "btc"
         }
 
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': f'Bearer {access_token}'}
 
@@ -46,7 +47,7 @@ class TestCheckSmokeAPI:
     @pytest.mark.smoke
     @pytest.mark.api
     @allure.step('Проверка адреса в сети BSC')
-    def test_check_smoke_bsc_ok(self, tokens):
+    def test_check_smoke_bsc_ok(self, class_tokens):
         logger.info("Начинаю тест: проверка адреса в сети BSC")
         url = Constants.API_URL + "aml/check"
 
@@ -55,7 +56,7 @@ class TestCheckSmokeAPI:
             "network": "bsc"
         }
 
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': f'Bearer {access_token}'}
 
@@ -79,7 +80,7 @@ class TestCheckSmokeAPI:
     @pytest.mark.smoke
     @pytest.mark.api
     @allure.step('Проверка адреса в сети ETH')
-    def test_check_smoke_ether_ok(self, tokens):
+    def test_check_smoke_ether_ok(self, class_tokens):
         logger.info("Начинаю тест: проверка адреса в сети ETH")
         url = Constants.API_URL + "aml/check"
 
@@ -88,7 +89,7 @@ class TestCheckSmokeAPI:
             "network": "ether"
         }
 
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': f'Bearer {access_token}'}
 
@@ -112,7 +113,7 @@ class TestCheckSmokeAPI:
     @pytest.mark.smoke
     @pytest.mark.api
     @allure.step('Проверка адреса в сети TRON')
-    def test_check_smoke_tron_ok(self, tokens):
+    def test_check_smoke_tron_ok(self, class_tokens):
         logger.info("Начинаю тест: проверка адреса в сети TRON")
 
         url = Constants.API_URL + "aml/check"
@@ -122,7 +123,7 @@ class TestCheckSmokeAPI:
             "network": "tron"
         }
 
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
         headers = {'Authorization': f'Bearer {access_token}'}
 
         response = requests.post(url, headers=headers, json=payload)
@@ -146,9 +147,10 @@ class TestCheckSmokeAPI:
     @pytest.mark.smoke
     @pytest.mark.api
     @allure.step('Негативная проверка неверного report_id')
-    def test_smoke_negative_api_incorrect_report_id(self, tokens):
+    def test_smoke_negative_api_incorrect_report_id(self, class_tokens):
+
         logger.info("Начинаю негативный тест: проверка неверного report_id")
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
         headers = {'Authorization': 'Bearer ' + access_token}
 
         url_check = Constants.API_URL + "aml/check"
@@ -177,9 +179,10 @@ class TestCheckSmokeAPI:
     @pytest.mark.smoke
     @pytest.mark.api
     @allure.step('Негативная проверка протухшего токена авторизации')
-    def test_smoke_negative_api_old_access_token(self, tokens):
+    def test_smoke_negative_api_old_access_token(self, class_tokens):
+
         logger.info("Начинаю тест: протухшего access_token")
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
         headers_1 = {'Authorization': 'Bearer ' + access_token}
 
         url_check = Constants.API_URL + "aml/check"

@@ -13,6 +13,41 @@ import json
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
+@pytest.fixture(scope="class")
+def class_tokens(request):
+    """
+    Логин выполняется 1 раз на класс тестов.
+    Токен доступен как аргумент или как атрибут класса.
+    """
+    if not hasattr(request.cls, "_tokens"):
+        logger.info("[TOKENS] Выполняю логин для класса")
+        login_url = Constants.API_URL + "/auth/login"
+        payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"}
+        login_response = requests.post(login_url, json=payload)
+        login_response.raise_for_status()
+        data = login_response.json()
+        if not data.get("ok"):
+            pytest.fail(f"Login failed for {Constants.EMAIL}: {data}")
+
+        code = get_verification_code()
+        verify_url = Constants.API_URL + "/auth/verify-email"
+        body = {"email": Constants.EMAIL, "code": code}
+        verify_response = requests.post(verify_url, json=body)
+        verify_response.raise_for_status()
+        data = verify_response.json()
+        assert data.get("ok") == 1, f"Verify failed: {data}"
+
+        access_token = data.get("access-token")
+        refresh_token = verify_response.cookies.get("refresh_token")
+
+        request.cls._tokens = {
+            "access_token": access_token,
+            "refresh_token": refresh_token
+        }
+
+    return request.cls._tokens
+
+
 @pytest.fixture(scope="function")
 def tokens():
     login_url = Constants.API_URL + "/auth/login"
