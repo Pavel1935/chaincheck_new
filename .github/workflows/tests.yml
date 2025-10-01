@@ -10,12 +10,10 @@ on:
 jobs:
   smoke:
     runs-on: ubuntu-latest       # Хост-раннер GitHub
-    # Используем контейнер Playwright с готовыми браузерами
-    container:
+    container:                   # Используем контейнер Playwright с готовыми браузерами
       image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
       options: --ipc=host --shm-size=1g
 
-    # Разрешаем публикацию на GitHub Pages (для "опционального" шага ниже)
     permissions:
       contents: write
       pages: write
@@ -26,12 +24,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2) Ставим Python-зависимости проекта (в т.ч. allure-pytest из requirements.txt)
+      # 2) Устанавливаем зависимости (pytest, allure-pytest и пр.)
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # 3) Ставим Allure CLI внутри контейнера, чтобы генерировать HTML-отчёт
-      #    Allure CLI — это Java-приложение; ставим JRE + качаем дистрибутив
+      # 3) Ставим Allure CLI (для генерации HTML-отчёта)
       - name: Install Allure CLI
         run: |
           apt-get update
@@ -42,12 +39,12 @@ jobs:
           ln -sf /opt/allure-${ALLURE_VERSION}/bin/allure /usr/bin/allure
           allure --version
 
-      # 4) (Опционально, но полезно) — чистим папку результатов перед первым прогоном
+      # 4) Чистим и готовим папку allure-results
       - name: Prepare allure-results
         run: rm -rf allure-results && mkdir -p allure-results
 
-      # 5) Добавляем метаданные для красивой "шапки" отчёта Allure (чтобы не было UNKNOWN)
-      - name: Add Allure metadata (executor & environment)
+      # 5) Добавляем метаданные (чтобы в Allure не было UNKNOWN)
+      - name: Add Allure metadata
         run: |
           mkdir -p allure-results
           cat > allure-results/executor.json <<'EOF'
@@ -60,32 +57,27 @@ jobs:
             "environment": "${{ github.ref_name }}"
           }
           EOF
-
-          # Добавляем properties (видны в Allure как Environment)
           echo "branch=${{ github.ref_name }}" >> allure-results/environment.properties
           echo "runner=ubuntu-latest" >> allure-results/environment.properties
 
-      # 6) Запускаем API-смоки. Ключи:
-      #    --alluredir=allure-results     -> пишем в ОДНУ папку
-      #    --clean-alluredir              -> чистим только ПЕРВЫЙ прогон
-      #    -vv -ra                        -> подробный вывод + сводка упавших/пропущенных в логах CI
+      # 6) Запуск API smoke тестов
       - name: Run API smoke tests
         run: |
           pytest -m "smoke and api" -vv -ra \
                  --alluredir=allure-results \
                  --clean-alluredir
 
-      # 7) Иногда полезно сделать паузу перед UI (капча/лимиты/почта)
+      # 7) Делаем паузу 3 минуты, чтобы не пересекалась капча
       - name: Wait before UI tests
-        run: sleep 300
+        run: sleep 180
 
-      # 8) Запускаем UI-смоки. Пишем в ту же папку allure-results (объединяем результаты)
+      # 8) Запуск UI smoke тестов
       - name: Run UI smoke tests
         run: |
           pytest -m "smoke and ui" -vv -ra \
                  --alluredir=allure-results
 
-      # 9) Всегда грузим «сырые» результаты (на случай локальной генерации отчёта)
+      # 9) Сохраняем allure-results как артефакт (для локального анализа)
       - name: Upload Allure results (raw)
         if: always()
         uses: actions/upload-artifact@v4
@@ -94,15 +86,15 @@ jobs:
           path: allure-results
           if-no-files-found: error
 
-      # 10) Генерируем красивый HTML-отчёт прямо в CI
+      # 10) Генерируем HTML-отчёт
       - name: Generate Allure HTML report
         if: always()
         run: |
           export ALLURE_BASE_URL="/${GITHUB_REPOSITORY#*/}/"
           allure generate allure-results -o allure-report --clean
-          ls -la allure-report | head -n 50
+          ls -la allure-report | head -n 30
 
-      # 11) Публикуем Allure отчет на GitHub Pages (постоянная ссылка)
+      # 11) Публикуем Allure Report на GitHub Pages
       - name: Deploy Allure Report to GitHub Pages
         if: always() && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
@@ -112,19 +104,7 @@ jobs:
           publish_branch: gh-pages
           force_orphan: true
 
-      # 12) Загружаем артефакты UI (скриншоты/трейсы/видео), если ты их сохраняешь
-      - name: Upload UI artifacts (screenshots/traces/videos)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ui-artifacts
-          path: |
-            screenshots
-            traces
-            videos
-          if-no-files-found: ignore
-
-      # 13) Комментируем в PR ссылку на отчет
+      # 12) Комментируем ссылку на отчёт в PR
       - name: Comment report URL
         if: always()
         uses: marocchino/sticky-pull-request-comment@v2

@@ -66,6 +66,9 @@ class LoginPage(BasePage):
         locator = self.page.get_by_text("Error: unknown auth error")
         expect(locator).to_be_visible(timeout=5000)
 
+    def enter_incorrect_address(self):
+        locator = self.page.get_by_text("Error: please enter a valid address")
+        expect(locator).to_be_visible(timeout=6000)
 
 
 
