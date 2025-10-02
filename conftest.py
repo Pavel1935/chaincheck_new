@@ -22,10 +22,13 @@ def class_tokens(request):
     if not hasattr(request.cls, "_tokens"):
         logger.info("[TOKENS] Выполняю логин для класса")
         login_url = Constants.API_URL + "/auth/login"
+
         payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"}
+
         login_response = requests.post(login_url, json=payload)
         login_response.raise_for_status()
         data = login_response.json()
+
         if not data.get("ok"):
             pytest.fail(f"Login failed for {Constants.EMAIL}: {data}")
 

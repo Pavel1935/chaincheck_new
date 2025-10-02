@@ -224,6 +224,7 @@ class TestCheckSmokeAPI:
     #     assert data["ok"] == 0
 
 
+# @pytest.mark.usefixtures("class_tokens")
 class TestCheckSmokeUI:
     @pytest.mark.smoke
     @pytest.mark.ui

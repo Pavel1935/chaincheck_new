@@ -29,17 +29,25 @@ class LoginPage(BasePage):
         button_check_for_free.click()
 
     def check_final_result(self):
-        button = self.page.locator("#secCheck").get_by_role("button", name="Check for Free")
-        # 1) ждем, пока кнопка появится и станет видимой
-        expect(button).to_be_visible(timeout=10000)
-        # 2) ждем, пока кнопка станет кликабельной
-        expect(button).to_be_enabled(timeout=10000)
-        # 3) кликаем только после этого
-        button.click()
-        # 4) дальше ждём основной элемент
+        # ищем кнопку "Check for Free"
+        button_check = self.page.locator("#secCheck").get_by_role("button", name="Check for Free")
+        # ищем кнопку "New check"
+        button_new = self.page.locator("#secCheck").get_by_role("button", name="New check")
+
+        # если видна кнопка "Check for Free"
+        if button_check.count() > 0 and button_check.is_visible():
+            expect(button_check).to_be_enabled(timeout=10000)
+            button_check.click()
+        # иначе жмём "New check"
+        elif button_new.count() > 0 and button_new.is_visible():
+            expect(button_new).to_be_enabled(timeout=10000)
+            button_new.click()
+        else:
+            raise Exception("Кнопка для проверки не найдена")
+
+        # ждём основной элемент
         self.page.locator(LoginLocators.MAIN_BUTTON).wait_for()
         expect(self.page.locator(LoginLocators.MAIN_BUTTON)).to_be_enabled()
-
 
     def click_new_check_button(self):
         button = self.page.locator("#secCheck").get_by_role("button", name="New check")
