@@ -2,7 +2,7 @@
 import requests
 from Constants import Constants
 from conftest import report_id
-from conftest import tokens
+from conftest import class_tokens
 
 RESET = "\033[0m"
 BOLD = "\033[1m"
@@ -15,10 +15,10 @@ YELLOW = "\033[93m"
 
 
 class TestAmlCheckHistoryOne:
-    def test_aml_check_history_one(self, tokens, report_id):
+    def test_aml_check_history_one(self, class_tokens, report_id):
 
         url = Constants.API_URL + "/aml/check/history/one"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -44,10 +44,10 @@ class TestAmlCheckHistoryOne:
         else:
             print(f"{BOLD}{ITALIC}{RED}Критический риск{RESET}")
 
-    def test_aml_check_history_one_incorrect_report_id(self, tokens, report_id):
+    def test_aml_check_history_one_incorrect_report_id(self, class_tokens, report_id):
 
         url = Constants.API_URL + "/aml/check/history/one"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -62,10 +62,10 @@ class TestAmlCheckHistoryOne:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_aml_check_history_one_without_report_id(self, tokens, report_id):
+    def test_aml_check_history_one_without_report_id(self, class_tokens, report_id):
 
         url = Constants.API_URL + "/aml/check/history/one"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -80,7 +80,7 @@ class TestAmlCheckHistoryOne:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_aml_check_history_one_invalid_access_token(self, tokens, report_id):
+    def test_aml_check_history_one_invalid_access_token(self, class_tokens, report_id):
 
         url = Constants.API_URL + "/aml/check/history/one"
 

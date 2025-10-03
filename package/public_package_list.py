@@ -2,7 +2,6 @@ import requests
 from Constants import Constants
 
 
-
 class TestPackageList:
     def test_package_list(self):
 

@@ -1,14 +1,14 @@
 import requests
 from Constants import Constants
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestHealthCheck:
 
-    def test_health_check(self, tokens):
+    def test_health_check(self, class_tokens):
 
         url = "https://check-dev.g5dl.com/api/v1/health-check"
-        refresh_token = tokens["refresh_token"]
+        refresh_token = class_tokens["refresh_token"]
 
         payload = {}
         headers = {

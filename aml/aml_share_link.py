@@ -1,14 +1,14 @@
 import requests
 from Constants import Constants
 from conftest import report_id
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestAmlShareLink:
-    def test_aml_share_link(self, report_id, tokens):
+    def test_aml_share_link(self, report_id, class_tokens):
 
         url = Constants.API_URL + "/aml/share/link"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -24,10 +24,10 @@ class TestAmlShareLink:
         assert data["ok"] == 1
         assert data["code"]
 
-    def test_aml_share_link_invalid_report_id(self, report_id, tokens):
+    def test_aml_share_link_invalid_report_id(self, report_id, class_tokens):
 
         url = Constants.API_URL + "/aml/share/link"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -43,10 +43,10 @@ class TestAmlShareLink:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_aml_share_link_without_report_id(self, tokens):
+    def test_aml_share_link_without_report_id(self, class_tokens):
 
         url = Constants.API_URL + "/aml/share/link"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 

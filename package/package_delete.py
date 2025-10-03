@@ -1,14 +1,14 @@
 import requests
 from Constants import Constants
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestPackageDelete:
-    def test_package_delete(self, tokens):
+    def test_package_delete(self, class_tokens):
 
         package_id = "0fe08122-90c6-4b0f-a962-997abd45576f"
         url = Constants.API_URL + "/package/" + package_id
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
         }
@@ -21,11 +21,11 @@ class TestPackageDelete:
         data = response.json()
         assert data["ok"] == 1
 
-    def test_package_delete_invalid_id(self, tokens):
+    def test_package_delete_invalid_id(self, class_tokens):
 
         package_id = "Спартак Москва"
         url = Constants.API_URL + "/package/" + package_id
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
         }
@@ -39,11 +39,11 @@ class TestPackageDelete:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_package_delete_incorrect_id(self, tokens):
+    def test_package_delete_incorrect_id(self, class_tokens):
 
         package_id = "72bf6fFDG0f-7bb5-46bc-8e91-b7ff6e4bc663"
         url = Constants.API_URL + "/package/" + package_id
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
         }

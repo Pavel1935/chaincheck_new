@@ -19,7 +19,6 @@ class TestProviderLogin:
         assert data["ok"] == 1
         assert data["url"].startswith("https")
 
-
     def test_provider_login_incorrect(self):
 
         provider = "mailru"

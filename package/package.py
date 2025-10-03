@@ -6,16 +6,16 @@ from conftest import tokens
 
 class TestPackage:
 
-    def test_package(self, tokens):
+    def test_package(self, class_tokens):
 
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
               "title": "Спартак Москва",
               "count_checks": 100,
               "price_usd": "10",
-              "ref_payout": "100"
+              "ref_payout": "1000"
             }
 
         headers = {'Authorization': 'Bearer ' + access_token}
@@ -117,9 +117,9 @@ class TestPackage:
             ("ref_payout", "100"),
             ("ref_payout", "101")
         ])
-    def test_package_positive_price_usd(self, tokens, data_3, value_3):
+    def test_package_positive_price_usd(self, class_tokens, data_3, value_3):
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             "title": "ВпередНашСпартакМосква",
@@ -142,9 +142,9 @@ class TestPackage:
             ("title", ""),
             ("title", "dskjfbkjvb;ksjvb;akdjfbvdakjbvadkjbvkajdvkjdavajdhfvjadhv;kjdbhv;kjadhv;kjadv;kjadv;kjadvndsvkd;bjhd;jlrghe;jgrh;ejgh;jkeghkjgegh;jkwehg;kjheg;jheg;kjherg;kjhe;kgjh;ekrgh;kwrjhg;wrkthjwlrjhwlrjhwlrjhlwejhgwehgnjhqe;jhqefkbhvdsk;jhbskdjbksjdnbsjnb,sdnb/sfdnb/sfndbsdnfbv;jhds;kjhds;kghwcuhwnlhhgerwhjhgerjj")
         ])
-    def test_package_negative_title(self, tokens, data_4, value_4):
+    def test_package_negative_title(self, class_tokens, data_4, value_4):
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             data_4: value_4,
@@ -172,9 +172,9 @@ class TestPackage:
 
 
         ])
-    def test_package_negative_count_checks(self, tokens, data_5, value_5):
+    def test_package_negative_count_checks(self, class_tokens, data_5, value_5):
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             "title": "ВпередНашСпартакМосква",
@@ -204,9 +204,9 @@ class TestPackage:
             ("price_usd", "$%^&&*$%"),
             ("", "10000")
         ])
-    def test_package_negative_price_usd(self, tokens, data_6, value_6):
+    def test_package_negative_price_usd(self, class_tokens, data_6, value_6):
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             "title": "ВпередНашСпартакМосква",
@@ -235,9 +235,9 @@ class TestPackage:
             ("ref_payout", "$%^&&*$%"),
             ("", "10000")
         ])
-    def test_package_positive_price_usd(self, tokens, data_7, value_7):
+    def test_package_positive_price_usd(self, class_tokens, data_7, value_7):
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             "title": "ВпередНашСпартакМосква",
@@ -255,10 +255,10 @@ class TestPackage:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST" or "VALIDATION_REF_PAYOUT_INVALID"
 
-    def test_package_without_title(self, tokens):
+    def test_package_without_title(self, class_tokens):
 
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
               "count_checks": 100,
@@ -275,10 +275,10 @@ class TestPackage:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_package_without_count_checks(self, tokens):
+    def test_package_without_count_checks(self, class_tokens):
 
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
               "title": "ВпередНашСпартакМосква",
@@ -295,10 +295,10 @@ class TestPackage:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_package_without_price_usd(self, tokens):
+    def test_package_without_price_usd(self, class_tokens):
 
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
               "title": "ВпередНашСпартакМосква",
@@ -315,10 +315,10 @@ class TestPackage:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_package_without_ref_payout(self, tokens):
+    def test_package_without_ref_payout(self, class_tokens):
 
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
               "title": "ВпередНашСпартакМосква",

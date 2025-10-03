@@ -28,7 +28,9 @@ def class_tokens():
 
     logger.info("[TOKENS] Выполняю логин для всей сессии")
     login_url = f"{Constants.API_URL}/auth/login"
-    payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"}
+    payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion",
+               "recaptcha_version": "v2"
+               }
 
     login_response = requests.post(login_url, json=payload)
     login_response.raise_for_status()
@@ -65,8 +67,9 @@ def class_tokens():
 #     """
 #     logger.info("[TOKENS] Выполняю логин для всей сессии")
 #
-#     login_url = Constants.API_URL + "/auth/login"
-#     payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"}
+# payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion",
+#            "recaptcha_version": "v2"
+#            }
 #
 #     login_response = requests.post(login_url, json=payload)
 #     login_response.raise_for_status()
@@ -97,10 +100,9 @@ def class_tokens():
 @pytest.fixture(scope="function")
 def tokens():
     login_url = Constants.API_URL + "/auth/login"
-
-    payload = {
-        "email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"
-    }
+    payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion",
+               "recaptcha_version": "v2"
+               }
 
     login_response = requests.post(login_url, json=payload)
     login_response.raise_for_status()

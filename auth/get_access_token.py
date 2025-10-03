@@ -2,11 +2,10 @@ import requests
 from conftest import tokens
 
 class TestGetAccessToken:
-
-    def test_get_access_token(self, tokens):
+    def test_get_access_token(self, class_tokens):
 
         url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
-        refresh_token = tokens["refresh_token"]
+        refresh_token = class_tokens["refresh_token"]
 
         payload = ""
         headers = {
@@ -36,7 +35,6 @@ class TestGetAccessToken:
 
         assert data["ok"] == 0
         assert data["error"] == "ENTITY_NOT_FOUND"
-
 
     def test_get_access_token_without_refresh(self):
 

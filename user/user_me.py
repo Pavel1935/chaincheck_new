@@ -1,15 +1,15 @@
 import requests
 from Constants import Constants
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestUserMe:
 
-    def test_user_me(self, tokens):
+    def test_user_me(self, class_tokens):
 
         endpoint = "/user/me"
         url = Constants.API_URL + endpoint
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -21,7 +21,7 @@ class TestUserMe:
         assert data["ok"] == 1
         assert data["result"]["email"] == Constants.EMAIL
 
-    def test_user_me_without_token(self, tokens):
+    def test_user_me_without_token(self, class_tokens):
 
         endpoint = "/user/me"
         url = Constants.API_URL + endpoint
@@ -33,7 +33,7 @@ class TestUserMe:
         assert data["ok"] == 0
         assert data["error"] == "UNAUTHORIZED"
 
-    def test_user_me_incorrect_token(self, tokens):
+    def test_user_me_incorrect_token(self, class_tokens):
 
         endpoint = "/user/me"
         url = Constants.API_URL + endpoint
@@ -47,7 +47,7 @@ class TestUserMe:
         assert data["ok"] == 0
         assert data["error"] == "UNAUTHORIZED"
 
-    def test_user_me_invalid_token(self, tokens):
+    def test_user_me_invalid_token(self, class_tokens):
 
         endpoint = "/user/me"
         url = Constants.API_URL + endpoint
@@ -61,7 +61,7 @@ class TestUserMe:
         assert data["ok"] == 0
         assert data["error"] == "UNAUTHORIZED"
 
-    def test_user_me_without_data_token(self, tokens):
+    def test_user_me_without_data_token(self, class_tokens):
 
         endpoint = "/user/me"
         url = Constants.API_URL + endpoint

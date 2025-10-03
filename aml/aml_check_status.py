@@ -1,14 +1,14 @@
 import requests
 from Constants import Constants
 from conftest import report_id
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestAmlCheckStatus:
-    def test_aml_check_status(self, tokens, report_id):
+    def test_aml_check_status(self, class_tokens, report_id):
 
         url = Constants.API_URL + "aml/check/status"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
           "report_id": report_id
@@ -55,10 +55,10 @@ class TestAmlCheckStatus:
         assert data["ok"] == 0
         assert data["error"] == "UNAUTHORIZED"
 
-    def test_aml_check_with_report_id(self, tokens):
+    def test_aml_check_with_report_id(self, class_tokens):
 
         url = Constants.API_URL + "aml/check/status"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 

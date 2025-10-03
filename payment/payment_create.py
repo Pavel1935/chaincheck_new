@@ -1,14 +1,14 @@
 import pytest
 import requests
 from Constants import Constants
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestPaymentCreate:
-    def test_payment_create(self, tokens):
+    def test_payment_create(self, class_tokens):
 
         url = Constants.API_URL + "/payment/create"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
           "package_id": "cb93f53f-7b22-4a7c-bc43-6552db486cc6",
@@ -35,10 +35,10 @@ class TestPaymentCreate:
             ("promo_code", "")
         ])
 
-    def test_payment_create_positive_promo_code(self, tokens, data, value):
+    def test_payment_create_positive_promo_code(self, class_tokens, data, value):
 
         url = Constants.API_URL + "/payment/create"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             "package_id": "cb93f53f-7b22-4a7c-bc43-6552db486cc6",
@@ -68,9 +68,9 @@ class TestPaymentCreate:
             ("package_id", "d"),
             ("package_id", "  ")
         ])
-    def test_payment_create_negative_package_id(self, tokens, data_3, value_3):
+    def test_payment_create_negative_package_id(self, class_tokens, data_3, value_3):
         url = Constants.API_URL + "/payment/create"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             data_3: value_3,
@@ -99,9 +99,9 @@ class TestPaymentCreate:
             ("payment_service", "d"),
             ("payment_service", "  ")
         ])
-    def test_payment_create_negative_payment_service(self, tokens, data_1, value_1):
+    def test_payment_create_negative_payment_service(self, class_tokens, data_1, value_1):
         url = Constants.API_URL + "/payment/create"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             "package_id": "cb93f53f-7b22-4a7c-bc43-6552db486cc6",
@@ -124,10 +124,10 @@ class TestPaymentCreate:
             ("promo_code", 123)
         ])
 
-    def test_payment_create_negative_promo_code(self, tokens, data_4, value_4):
+    def test_payment_create_negative_promo_code(self, class_tokens, data_4, value_4):
 
         url = Constants.API_URL + "/payment/create"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             "package_id": "cb93f53f-7b22-4a7c-bc43-6552db486cc6",
@@ -144,10 +144,10 @@ class TestPaymentCreate:
         assert data["ok"] == 0
         assert data["error"] == "VALIDATION_PAYMENT_SERVICE" or "BAD_REQUEST"
 
-    def test_payment_create_without_promo_code(self, tokens):
+    def test_payment_create_without_promo_code(self, class_tokens):
 
         url = Constants.API_URL + "/payment/create"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
           "package_id": "cb93f53f-7b22-4a7c-bc43-6552db486cc6",
@@ -164,10 +164,10 @@ class TestPaymentCreate:
         assert data["ok"] == 1
         assert data["url"].startswith("https")
 
-    def test_payment_create_without_package_id(self, tokens):
+    def test_payment_create_without_package_id(self, class_tokens):
 
         url = Constants.API_URL + "/payment/create"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
           "promo_code": "oioioi",
@@ -184,10 +184,10 @@ class TestPaymentCreate:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_payment_create_without_payment_service(self, tokens):
+    def test_payment_create_without_payment_service(self, class_tokens):
 
         url = Constants.API_URL + "/payment/create"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
           "package_id": "cb93f53f-7b22-4a7c-bc43-6552db486cc6",
@@ -222,7 +222,7 @@ class TestPaymentCreate:
         assert data["ok"] == 0
         assert data["error"] == "UNAUTHORIZED"
 
-    def test_payment_create_old_access_token(self, tokens):
+    def test_payment_create_old_access_token(self, class_tokens):
 
         url = Constants.API_URL + "/payment/create"
 
@@ -242,7 +242,7 @@ class TestPaymentCreate:
         assert data["ok"] == 0
         assert data["error"] == "UNAUTHORIZED"
 
-    def test_payment_create_old_access_token(self, tokens):
+    def test_payment_create_old_access_token(self, class_tokens):
 
         url = Constants.API_URL + "/payment/create"
 

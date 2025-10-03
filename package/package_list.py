@@ -1,13 +1,13 @@
 import requests
 from Constants import Constants
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestPackageList:
-    def test_package_list(self, tokens):
+    def test_package_list(self, class_tokens):
 
         url = Constants.API_URL + "/package/list"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 

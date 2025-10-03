@@ -1,14 +1,14 @@
 import requests
 from Constants import Constants
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestPaymentCheck:
-    def test_payment_check(self, tokens):
+    def test_payment_check(self, class_tokens):
         external_payment_id = "8a383dc3-d43d-4f78-9bbf-3fa3c0e07270"
 
         url = f"{Constants.API_URL}/payment/check/{external_payment_id}"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -20,10 +20,10 @@ class TestPaymentCheck:
         assert data["ok"] == 1
         assert data["status"] == "confirmed"
 
-    def test_payment_check_without_external_payment_id(self, tokens):
+    def test_payment_check_without_external_payment_id(self, class_tokens):
 
         url = f"{Constants.API_URL}/payment/check/"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -35,11 +35,11 @@ class TestPaymentCheck:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_payment_check_invalid_external_payment_id(self, tokens):
+    def test_payment_check_invalid_external_payment_id(self, class_tokens):
         external_payment_id = "8a3831223dc3-d43d-4f78-9bbf-3fa3c0e07270"
 
         url = f"{Constants.API_URL}/payment/check/{external_payment_id}"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -51,11 +51,11 @@ class TestPaymentCheck:
         assert data["ok"] == 0
         assert data["error"] == "ENTITY_NOT_FOUND"
 
-    def test_payment_check_without_external_payment_id_data(self, tokens):
+    def test_payment_check_without_external_payment_id_data(self, class_tokens):
         external_payment_id = ""
 
         url = f"{Constants.API_URL}/payment/check/{external_payment_id}"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -81,7 +81,7 @@ class TestPaymentCheck:
         assert data["ok"] == 0
         assert data["status"] == "UNAUTHORIZED"
 
-    def test_payment_check_invalid_access_token(self, tokens):
+    def test_payment_check_invalid_access_token(self, class_tokens):
         external_payment_id = "8a383dc3-d43d-4f78-9bbf-3fa3c0e07270"
 
         url = f"{Constants.API_URL}/payment/check/{external_payment_id}"

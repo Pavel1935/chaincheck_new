@@ -1,15 +1,15 @@
 import requests
 from Constants import Constants
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestDetails:
 
-    def test_user_details(self, tokens):
+    def test_user_details(self, class_tokens):
 
         endpoint = "/user/detail"
         url = Constants.API_URL + endpoint
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             "email": Constants.EMAIL

@@ -1,5 +1,5 @@
 
-from conftest import tokens
+from conftest import class_tokens
 import pytest
 import requests
 import time
@@ -35,9 +35,9 @@ class TestCheckScore:
         ]
     )
     @allure.step('Проверка разных типов score для BTC')
-    def test_risk_score_wallet_btc(self, network, wallet, tokens):
+    def test_risk_score_wallet_btc(self, network, wallet, class_tokens):
         logger.info("Начинаю тест: проверка разных типов score для BTC")
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
         headers = {'Authorization': 'Bearer ' + access_token}
 
         url_check = Constants.API_URL + "aml/check"
@@ -84,9 +84,9 @@ class TestCheckScore:
         ]
     )
     @allure.step('Проверка разных типов score для BSC')
-    def test_risk_score_wallet_bsc(self, network, wallet, tokens):
+    def test_risk_score_wallet_bsc(self, network, wallet, class_tokens):
         logger.info("Начинаю тест: проверка разных типов score для BSC")
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
         headers = {'Authorization': 'Bearer ' + access_token}
 
         url_check = Constants.API_URL + "aml/check"
@@ -134,9 +134,9 @@ class TestCheckScore:
         ]
     )
     @allure.step('Проверка разных типов score для Ether')
-    def test_risk_score_wallet_ether(self, network, wallet, tokens):
+    def test_risk_score_wallet_ether(self, network, wallet, class_tokens):
         logger.info("Начинаю тест: проверка разных типов score для Ether")
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
         headers = {'Authorization': f'Bearer ' + access_token}
 
         url_check = Constants.API_URL + "aml/check"
@@ -184,9 +184,9 @@ class TestCheckScore:
         ]
     )
     @allure.step('Проверка разных типов score для TRON')
-    def test_risk_score_wallet_tron(self, network, wallet, tokens):
+    def test_risk_score_wallet_tron(self, network, wallet, class_tokens):
         logger.info("Начинаю тест: проверка разных типов score для TRON")
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
         headers = {'Authorization': f'Bearer ' + access_token}
 
         url_check = Constants.API_URL + "aml/check"

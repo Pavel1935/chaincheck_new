@@ -1,13 +1,13 @@
 import requests
 from Constants import Constants
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestAmlCheckHistoryLimit:
-    def test_aml_check_history_limit(self, tokens):
+    def test_aml_check_history_limit(self, class_tokens):
 
         url = Constants.API_URL + "/aml/check/history"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
         params = "limit=0"
@@ -35,10 +35,10 @@ class TestAmlCheckHistoryLimit:
         assert data["ok"] == 1
         assert data["result"] == {'items': []}
 
-    def test_aml_check_history_invalid_limit(self, tokens):
+    def test_aml_check_history_invalid_limit(self, class_tokens):
 
         url = Constants.API_URL + "/aml/check/history"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         headers = {'Authorization': 'Bearer ' + access_token}
         params = "limit=999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
@@ -51,7 +51,7 @@ class TestAmlCheckHistoryLimit:
         assert data["ok"] == 0
         assert data["error"] == "BAD_REQUEST"
 
-    def test_aml_check_history_without_access_token(self, tokens):
+    def test_aml_check_history_without_access_token(self, class_tokens):
 
         url = Constants.API_URL + "/aml/check/history"
 

@@ -4,17 +4,17 @@ from conftest import tokens
 
 
 class TestLogout:
-    def test_logout(self, tokens):
+    def test_logout(self, class_tokens):
 
         cookies = {
-            "refresh_token": tokens["refresh_token"]
+            "refresh_token": class_tokens["refresh_token"]
         }
 
         endpoint = "/logout"
         url = Constants.API_URL + endpoint
 
         headers = {
-            "Authorization": f"Bearer {tokens['access_token']}"
+            "Authorization": f"Bearer {class_tokens['access_token']}"
         }
 
         response = requests.get(url, headers=headers, cookies=cookies, json={})
@@ -23,7 +23,7 @@ class TestLogout:
         data = response.json()
         assert data["ok"] == 1
 
-    def test_logout_without_refresh_token(self, tokens):
+    def test_logout_without_refresh_token(self, class_tokens):
 
         # cookies = {
         #     "refresh_token": tokens["refresh_token"]
@@ -33,7 +33,7 @@ class TestLogout:
         url = Constants.API_URL + endpoint
 
         headers = {
-            "Authorization": f"Bearer {tokens['access_token']}"
+            "Authorization": f"Bearer {class_tokens['access_token']}"
         }
 
         response = requests.get(url, headers=headers, json={})

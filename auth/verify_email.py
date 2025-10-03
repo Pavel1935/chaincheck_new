@@ -57,7 +57,6 @@ class TestVerifyEmail:
         assert data["ok"] == 0
         assert data["error"] == "ENTITY_NOT_FOUND"
 
-
     def test_verify_email_invalid_code(self):
 
         endpoint = "/auth/verify-email"

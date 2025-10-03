@@ -10,8 +10,8 @@ BASE = Constants.API_URL
 
 class TestAMLCheckSmoke:
     @pytest.mark.smoke
-    def test_aml_check_smoke_btc_ok(self, tokens):
-        headers = {'Authorization': f'Bearer {tokens["access_token"]}'}
+    def test_aml_check_smoke_btc_ok(self, class_tokens):
+        headers = {'Authorization': f'Bearer {class_tokens["access_token"]}'}
         url = f"{BASE}/aml/check"
 
         payload = {
@@ -53,8 +53,8 @@ class TestAMLCheckSmoke:
 
 
     @pytest.mark.smoke
-    def test_aml_check_smoke_bsc_ok(self, tokens):
-        headers = {'Authorization': f'Bearer {tokens["access_token"]}'}
+    def test_aml_check_smoke_bsc_ok(self, class_tokens):
+        headers = {'Authorization': f'Bearer {class_tokens["access_token"]}'}
         url = f"{BASE}/aml/check"
 
         payload = {
@@ -87,8 +87,8 @@ class TestAMLCheckSmoke:
 
 
     @pytest.mark.smoke
-    def test_aml_check_smoke_ether_ok(self, tokens):
-        headers = {'Authorization': f'Bearer {tokens["access_token"]}'}
+    def test_aml_check_smoke_ether_ok(self, class_tokens):
+        headers = {'Authorization': f'Bearer {class_tokens["access_token"]}'}
         url = f"{BASE}/aml/check"
 
         payload = {
@@ -121,8 +121,8 @@ class TestAMLCheckSmoke:
 
 
     @pytest.mark.smoke
-    def test_aml_check_smoke_tron_ok(self, tokens):
-        headers = {'Authorization': f'Bearer {tokens["access_token"]}'}
+    def test_aml_check_smoke_tron_ok(self, class_tokens):
+        headers = {'Authorization': f'Bearer {class_tokens["access_token"]}'}
         url = f"{BASE}/aml/check"
 
         payload = {
@@ -155,8 +155,8 @@ class TestAMLCheckSmoke:
 
 
     @pytest.mark.smoke
-    def test_smoke_negative_api_incorrect_report_id(self, tokens):
-        headers = {'Authorization': f'Bearer {tokens["access_token"]}'}
+    def test_smoke_negative_api_incorrect_report_id(self, class_tokens):
+        headers = {'Authorization': f'Bearer {class_tokens["access_token"]}'}
         url = f"{BASE}/aml/check"
 
         payload = {"wallet": "bc1qffyax9rrxmqyq8xwjkzrrqwqjp3ppz5a4665f9", "network": "btc"}
@@ -179,8 +179,8 @@ class TestAMLCheckSmoke:
 
 
     @pytest.mark.smoke
-    def test_smoke_negative_api_old_access_token(self, tokens):
-        valid_headers = {'Authorization': f'Bearer {tokens["access_token"]}'}
+    def test_smoke_negative_api_old_access_token(self, class_tokens):
+        valid_headers = {'Authorization': f'Bearer {class_tokens["access_token"]}'}
         url = f"{BASE}/aml/check"
 
         payload = {"wallet": "0x1EDbA89FF829c4DF84b15F1D9Dd75DC9a5582F2b", "network": "bsc"}

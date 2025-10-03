@@ -1,10 +1,10 @@
 import requests
 from Constants import Constants
-from conftest import tokens
+from conftest import class_tokens
 
 
 class TestAmlGetNetworks:
-    def test_aml_get_networks(self, tokens):
+    def test_aml_get_networks(self, class_tokens):
 
         url = Constants.API_URL + "/aml/networks"
 
