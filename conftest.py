@@ -12,43 +12,86 @@ import json
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+_TOKENS_CACHE = None  # защита от повторного логина
 
-@pytest.fixture(scope="class")
-def class_tokens(request):
+
+@pytest.fixture(scope="session")
+def class_tokens():
     """
-    Логин выполняется 1 раз на класс тестов.
-    Токен доступен как аргумент или как атрибут класса.
+    1 раз за сессию логинимся по API и возвращаем токены.
+    Никаких повторных обращений к /auth/login.
     """
-    if not hasattr(request.cls, "_tokens"):
-        logger.info("[TOKENS] Выполняю логин для класса")
-        login_url = Constants.API_URL + "/auth/login"
+    global _TOKENS_CACHE
+    if _TOKENS_CACHE:
+        logger.info("[TOKENS] Использую кэшированный токен")
+        return _TOKENS_CACHE
 
-        payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"}
+    logger.info("[TOKENS] Выполняю логин для всей сессии")
+    login_url = f"{Constants.API_URL}/auth/login"
+    payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"}
 
-        login_response = requests.post(login_url, json=payload)
-        login_response.raise_for_status()
-        data = login_response.json()
+    login_response = requests.post(login_url, json=payload)
+    login_response.raise_for_status()
+    data = login_response.json()
+    if not data.get("ok"):
+        pytest.fail(f"Login failed for {Constants.EMAIL}: {data}")
 
-        if not data.get("ok"):
-            pytest.fail(f"Login failed for {Constants.EMAIL}: {data}")
+    # получаем код из Redis и подтверждаем
+    code = get_verification_code()
+    verify_url = f"{Constants.API_URL}/auth/verify-email"
+    body = {"email": Constants.EMAIL, "code": code}
+    verify_response = requests.post(verify_url, json=body)
+    verify_response.raise_for_status()
+    data = verify_response.json()
+    assert data.get("ok") == 1, f"Verify failed: {data}"
 
-        code = get_verification_code()
-        verify_url = Constants.API_URL + "/auth/verify-email"
-        body = {"email": Constants.EMAIL, "code": code}
-        verify_response = requests.post(verify_url, json=body)
-        verify_response.raise_for_status()
-        data = verify_response.json()
-        assert data.get("ok") == 1, f"Verify failed: {data}"
+    access_token = data.get("access-token")
+    refresh_token = verify_response.cookies.get("refresh_token")
+    assert refresh_token, "refresh_token отсутствует в cookies verify_response"
 
-        access_token = data.get("access-token")
-        refresh_token = verify_response.cookies.get("refresh_token")
+    _TOKENS_CACHE = {
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }
+    return _TOKENS_CACHE
 
-        request.cls._tokens = {
-            "access_token": access_token,
-            "refresh_token": refresh_token
-        }
 
-    return request.cls._tokens
+
+# @pytest.fixture(scope="session")
+# def class_tokens():
+#     """
+#     Логин выполняется 1 раз за всю сессию.
+#     Токен доступен как аргумент в тестах.
+#     """
+#     logger.info("[TOKENS] Выполняю логин для всей сессии")
+#
+#     login_url = Constants.API_URL + "/auth/login"
+#     payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion"}
+#
+#     login_response = requests.post(login_url, json=payload)
+#     login_response.raise_for_status()
+#     data = login_response.json()
+#
+#     if not data.get("ok"):
+#         pytest.fail(f"Login failed for {Constants.EMAIL}: {data}")
+#
+#     code = get_verification_code()
+#     verify_url = Constants.API_URL + "/auth/verify-email"
+#     body = {"email": Constants.EMAIL, "code": code}
+#     verify_response = requests.post(verify_url, json=body)
+#     verify_response.raise_for_status()
+#     data = verify_response.json()
+#     assert data.get("ok") == 1, f"Verify failed: {data}"
+#
+#     access_token = data.get("access-token")
+#     refresh_token = verify_response.cookies.get("refresh_token")
+#
+#     tokens = {
+#         "access_token": access_token,
+#         "refresh_token": refresh_token
+#     }
+#
+#     return tokens
 
 
 @pytest.fixture(scope="function")
@@ -104,58 +147,58 @@ def tokens():
                     json={}
                  )
 
-@pytest.fixture()
-def tokens_moc():
-    login_url = Constants.API_URL + "/auth/login"
-
-    payload = {
-        "email": Constants.MOCK_EMAIL, "recaptcha_token": "SpartakChampion"
-    }
-
-    login_response = requests.post(login_url, json=payload)
-    login_response.raise_for_status()
-    data = login_response.json()
-    print("[LOGIN] RESPONSE:", data)
-
-    if not data.get("ok"):
-        pytest.fail(f"Login failed for {Constants.MOCK_EMAIL}: {data}")
-
-    from redis_utils import get_verification_code_moc
-    code = get_verification_code_moc()
-    print(f"[Verification code] Received: {code}")
-
-    # verify
-    verify_url = Constants.API_URL + "/auth/verify-email"
-    body = {
-        "email": Constants.MOCK_EMAIL,
-        "code": code
-    }
-
-    verify_response = requests.post(verify_url, json=body)
-    verify_response.raise_for_status()
-    print("[VERIFY] RESPONSE:", verify_response.text)
-
-    data = verify_response.json()
-    assert data.get("ok") == 1, f"Verify failed: {data}"
-
-    access_token = data.get("access-token")
-    refresh_token = verify_response.cookies.get("refresh_token")
-    print(f"[TOKENS] Access: {access_token}")
-    print(f"[TOKENS] Refresh: {refresh_token}")
-
-    creds = {
-                "access_token": data.get("access-token"),
-                "refresh_token": verify_response.cookies.get("refresh_token")
-                }
-    yield creds
-    #logout
-    with suppress(Exception):
-                 requests.get(
-                    f"{Constants.API_URL}/logout",
-                    headers={"Authorization": f"Bearer {creds['access_token']}"},
-                    cookies={"refresh_token": creds["refresh_token"]},
-                    json={}
-                 )
+# @pytest.fixture()
+# def tokens_moc():
+#     login_url = Constants.API_URL + "/auth/login"
+#
+#     payload = {
+#         "email": Constants.MOCK_EMAIL, "recaptcha_token": "SpartakChampion"
+#     }
+#
+#     login_response = requests.post(login_url, json=payload)
+#     login_response.raise_for_status()
+#     data = login_response.json()
+#     print("[LOGIN] RESPONSE:", data)
+#
+#     if not data.get("ok"):
+#         pytest.fail(f"Login failed for {Constants.MOCK_EMAIL}: {data}")
+#
+#     from redis_utils import get_verification_code_moc
+#     code = get_verification_code_moc()
+#     print(f"[Verification code] Received: {code}")
+#
+#     # verify
+#     verify_url = Constants.API_URL + "/auth/verify-email"
+#     body = {
+#         "email": Constants.MOCK_EMAIL,
+#         "code": code
+#     }
+#
+#     verify_response = requests.post(verify_url, json=body)
+#     verify_response.raise_for_status()
+#     print("[VERIFY] RESPONSE:", verify_response.text)
+#
+#     data = verify_response.json()
+#     assert data.get("ok") == 1, f"Verify failed: {data}"
+#
+#     access_token = data.get("access-token")
+#     refresh_token = verify_response.cookies.get("refresh_token")
+#     print(f"[TOKENS] Access: {access_token}")
+#     print(f"[TOKENS] Refresh: {refresh_token}")
+#
+#     creds = {
+#                 "access_token": data.get("access-token"),
+#                 "refresh_token": verify_response.cookies.get("refresh_token")
+#                 }
+#     yield creds
+#     #logout
+#     with suppress(Exception):
+#                  requests.get(
+#                     f"{Constants.API_URL}/logout",
+#                     headers={"Authorization": f"Bearer {creds['access_token']}"},
+#                     cookies={"refresh_token": creds["refresh_token"]},
+#                     json={}
+#                  )
 
 
 @pytest.fixture
@@ -279,39 +322,39 @@ def verification_code_redis():
         return get_verification_code(email=email)
     return _get
 
-@pytest.fixture
-def verification_code_redis_moc():
-    def _get(email: str) -> str:
-        return get_verification_code_moc(email=email)
-    return _get
+# @pytest.fixture
+# def verification_code_redis_moc():
+#     def _get(email: str) -> str:
+#         return get_verification_code_moc(email=email)
+#     return _get
 
 
-@pytest.fixture
-def mock_auth(tokens_moc):
-    """
-    Возвращает функцию, которую можно вызвать в тесте,
-    чтобы замокать авторизацию на конкретной странице.
-    """
-    def _apply(page):
-        LOGIN_URL_PATTERN = "**/auth/login"
-        VERIFY_URL_PATTERN = "**/auth/verify-email"
-
-        def login_handler(route, request):
-            route.fulfill(
-                status=200,
-                headers={"content-type": "application/json"},
-                body=json.dumps({"ok": 1})
-            )
-
-        def verify_handler(route, request):
-            body = {"ok": 1, "access-token": tokens_moc["access_token"]}
-            headers = {
-                "content-type": "application/json",
-                "set-cookie": f"refresh_token={tokens_moc['refresh_token']}; Path=/; HttpOnly; Secure; SameSite=Lax"
-            }
-            route.fulfill(status=200, headers=headers, body=json.dumps(body))
-
-        page.route(LOGIN_URL_PATTERN, login_handler)
-        page.route(VERIFY_URL_PATTERN, verify_handler)
-
-    return _apply
+# @pytest.fixture
+# def mock_auth(tokens_moc):
+#     """
+#     Возвращает функцию, которую можно вызвать в тесте,
+#     чтобы замокать авторизацию на конкретной странице.
+#     """
+#     def _apply(page):
+#         LOGIN_URL_PATTERN = "**/auth/login"
+#         VERIFY_URL_PATTERN = "**/auth/verify-email"
+#
+#         def login_handler(route, request):
+#             route.fulfill(
+#                 status=200,
+#                 headers={"content-type": "application/json"},
+#                 body=json.dumps({"ok": 1})
+#             )
+#
+#         def verify_handler(route, request):
+#             body = {"ok": 1, "access-token": tokens_moc["access_token"]}
+#             headers = {
+#                 "content-type": "application/json",
+#                 "set-cookie": f"refresh_token={tokens_moc['refresh_token']}; Path=/; HttpOnly; Secure; SameSite=Lax"
+#             }
+#             route.fulfill(status=200, headers=headers, body=json.dumps(body))
+#
+#         page.route(LOGIN_URL_PATTERN, login_handler)
+#         page.route(VERIFY_URL_PATTERN, verify_handler)
+#
+#     return _apply
