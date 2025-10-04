@@ -1,0 +1,3 @@
+INFO     conftest:conftest.py:298 Запуск Playwright и браузера
+INFO     conftest:conftest.py:314 Создание объекта LoginPage
+INFO     conftest:conftest.py:317 Закрытие браузера

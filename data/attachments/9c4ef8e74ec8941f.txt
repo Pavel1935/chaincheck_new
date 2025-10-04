@@ -1,0 +1,2 @@
+2025-10-04 05:09:31.169 | INFO     | tests.test_smoke:test_smoke_negative_api_incorrect_report_id:152 - Начинаю негативный тест: проверка неверного report_id
+2025-10-04 05:09:33.169 | INFO     | tests.test_smoke:test_smoke_negative_api_incorrect_report_id:177 - Проверяю результат

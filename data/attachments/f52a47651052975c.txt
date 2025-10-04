@@ -1,0 +1,2 @@
+2025-10-04 05:09:27.644 | INFO     | tests.test_smoke:test_check_smoke_tron_ok:117 - Начинаю тест: проверка адреса в сети TRON
+2025-10-04 05:09:31.166 | INFO     | tests.test_smoke:test_check_smoke_tron_ok:145 - Проверяю результат
