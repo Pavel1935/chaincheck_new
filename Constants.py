@@ -1,6 +1,7 @@
 import pytest
 import requests
 
+
 class Constants:
     API_URL = "https://check-dev.g5dl.com/api/v1/"
     EMAIL = "oukb1147@gmail.com"

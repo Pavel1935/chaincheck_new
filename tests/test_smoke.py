@@ -209,19 +209,6 @@ class TestCheckSmokeAPI:
         assert data["error"] == "UNAUTHORIZED"
         logger.info("Проверяю результат")
 
-    # def test_check_120sec(self, tokens):
-    #     url = f"{Constants.API_URL}/aml/check"
-    #     payload = {
-    #         "wallet": "bc1qffyax9rrxmqyq8xwjkzrrqwqjp3ppz5a4665f9",
-    #         "network": "btc"
-    #     }
-    #     headers = {"Authorization": f"Bearer {tokens['access_token']}"}
-    #
-    #     requests.post(url, headers=headers, json=payload)
-    #     response = requests.post(url, headers=headers, json=payload)
-    #     data = response.json()
-    #
-    #     assert data["ok"] == 0
 
 
 # @pytest.mark.usefixtures("class_tokens")
@@ -268,6 +255,9 @@ class TestCheckSmokeUI:
 
 
 
+
+
+# Тут описан тест с использованием мокирования, который на данный момент не актуальный
 
     # @pytest.mark.smoke
     # @pytest.mark.ui
