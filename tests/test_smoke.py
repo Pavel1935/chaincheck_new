@@ -217,9 +217,6 @@ class TestCheckSmokeUI:
     @pytest.mark.ui
     @allure.step('Позитивная проверка входа по email')
     def test_email_login_ui(self, login_page):
-        # token = class_tokens["access_token"]
-        # logger.info(f"Использую токен: {token}")
-
         logger.info("Начинаю тест: вход по email")
         login_page.open("https://check-dev.g5dl.com")
 
