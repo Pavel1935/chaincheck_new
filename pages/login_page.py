@@ -53,12 +53,6 @@ class LoginPage(BasePage):
         self.select_network(network_name)
         self.wait_and_click(LoginLocators.CHECK_FORM_BUTTON)
 
-    def click_back_button_and_check_result(self):
-        self.wait_and_click(LoginLocators.BACK_BUTTON)
-        self.page.locator(LoginLocators.LOG_IN_BUTTON).click()
-
-        locator = self.page.get_by_text("Error: unknown auth error")
-        expect(locator).to_be_visible(timeout=5000)
 
     def check_120sec_pause(self):
         locator = self.page.get_by_text("Error: unknown auth error")

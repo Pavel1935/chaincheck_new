@@ -210,8 +210,6 @@ class TestCheckSmokeAPI:
         logger.info("Проверяю результат")
 
 
-
-# @pytest.mark.usefixtures("class_tokens")
 class TestCheckSmokeUI:
     @pytest.mark.smoke
     @pytest.mark.ui
