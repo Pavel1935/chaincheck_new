@@ -312,6 +312,18 @@ def get_user_role(conn, email):
         # если пользователь найден — возвращаем его роль
         return result["role"] if result else None
 
+    # ЛОГИРОВАНИЕ
+    def _configure_logging():
+        # уровень берём из переменной окружения, по умолчанию INFO
+        level = os.getenv("LOG_LEVEL", "INFO").upper()
+        logging.basicConfig(
+            level=getattr(logging, level, logging.INFO),
+            format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+        )
+        # чтобы requests не шумел
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
+
+    _configured = False
     @pytest.hookimpl(tryfirst=True)
     def pytest_configure(config):
         global _configured
@@ -381,17 +393,6 @@ def get_user_role(conn, email):
 #                     json={}
 #                  )
 
-# ЛОГИРОВАНИЕ
-# def _configure_logging():
-#     # уровень берём из переменной окружения, по умолчанию INFO
-#     level = os.getenv("LOG_LEVEL", "INFO").upper()
-#     logging.basicConfig(
-#         level=getattr(logging, level, logging.INFO),
-#         format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
-#     )
-#     # чтобы requests не шумел
-#     logging.getLogger("urllib3").setLevel(logging.WARNING)
-#
-# _configured = False
+
 #
 #
