@@ -312,6 +312,13 @@ def get_user_role(conn, email):
         # если пользователь найден — возвращаем его роль
         return result["role"] if result else None
 
+    @pytest.hookimpl(tryfirst=True)
+    def pytest_configure(config):
+        global _configured
+        if not _configured:
+            _configure_logging()
+            _configured = True
+
 #ФИКСУТРА КОТОТАЯ МОКИРУЕТ ПОЛУЧЕНИЕ ВЕРИФИКАЦИОННОГО КОДА ИЗ РЕДИС
 # @pytest.fixture
 # def verification_code_redis_moc():
@@ -388,9 +395,3 @@ def get_user_role(conn, email):
 # _configured = False
 #
 #
-# @pytest.hookimpl(tryfirst=True)
-# def pytest_configure(config):
-#     global _configured
-#     if not _configured:
-#         _configure_logging()
-#         _configured = True
