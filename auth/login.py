@@ -6,7 +6,8 @@ class TestLogin:
     def test_login(self):
 
         url = Constants.API_URL + "/auth/login"
-        payload = {"email": Constants.EMAIL, "recaptcha_token": "SpartakChampion",
+        payload = {"email": "pashkarob@gmail.com",
+                   "recaptcha_token": "SpartakChampion",
                    "recaptcha_version": "v2"
                    }
 

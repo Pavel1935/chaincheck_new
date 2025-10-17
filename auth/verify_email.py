@@ -3,22 +3,22 @@ import requests
 from Constants import Constants
 from conftest import verification_code_fixture
 
+
 class TestVerifyEmail:
-    def test_verify_email(self, verification_code_fixture):
+    def test_verify_email(self):
 
         endpoint = "/auth/verify-email"
         url = Constants.API_URL + endpoint
 
         body = {
-            "email": Constants.EMAIL,
-            "code": "250516"
+            "email": 'pashkarob@gmail.com',
+            "code": "687821"
         }
 
         response = requests.post(url, json=body)
         print("RESPONSE TEXT:", response.text)
 
         data = response.json()
-
         assert data["ok"] == 1
 
     def test_verify_email_without_code(self):
