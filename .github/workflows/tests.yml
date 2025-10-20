@@ -3,14 +3,14 @@ name: Smoke tests  # Имя workflow (видно в Actions)
 on:
   push:
     branches: [ main ]           # Запуск при пушах в main
-  pull_request:                  # Запуск на каждый PR в main
+  pull_request:
   schedule:
     - cron: "0 5 * * *"          # Автозапуск по расписанию: 05:00 UTC (08:00 МСК)
 
 jobs:
   smoke:
-    runs-on: ubuntu-latest       # Хост-раннер GitHub
-    container:                   # Используем контейнер Playwright с готовыми браузерами
+    runs-on: ubuntu-latest
+    container:
       image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
       options: --ipc=host --shm-size=1g
 
@@ -20,15 +20,17 @@ jobs:
       id-token: write
 
     steps:
-      # 1) Забираем код репозитория
+      # 1️⃣ Забираем код
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2) Устанавливаем зависимости (pytest, allure-pytest и пр.)
+      # 2️⃣ Ставим зависимости (pytest + allure)
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install "pytest<8.3.0" "allure-pytest>=2.13.2"
 
-      # 3) Ставим Allure CLI (для генерации HTML-отчёта)
+      # 3️⃣ Ставим Allure CLI для генерации HTML
       - name: Install Allure CLI
         run: |
           apt-get update
@@ -39,11 +41,11 @@ jobs:
           ln -sf /opt/allure-${ALLURE_VERSION}/bin/allure /usr/bin/allure
           allure --version
 
-      # 4) Чистим и готовим папку allure-results
+      # 4️⃣ Чистим папку allure-results
       - name: Prepare allure-results
         run: rm -rf allure-results && mkdir -p allure-results
 
-      # 5) Добавляем метаданные (чтобы в Allure не было UNKNOWN)
+      # 5️⃣ Добавляем метаданные
       - name: Add Allure metadata
         run: |
           mkdir -p allure-results
@@ -60,33 +62,40 @@ jobs:
           echo "branch=${{ github.ref_name }}" >> allure-results/environment.properties
           echo "runner=ubuntu-latest" >> allure-results/environment.properties
 
-      # 6) Запуск API smoke тестов
+      # 6️⃣ Запуск API smoke тестов
       - name: Run API smoke tests
         run: |
           pytest -m "smoke and api" -vv -ra \
                  --alluredir=allure-results \
                  --clean-alluredir
 
-      # 7) Делаем паузу 3 минуты, чтобы не пересекалась капча
+      # 7️⃣ Пауза 3 минуты (капча)
       - name: Wait before UI tests
         run: sleep 180
 
-      # 8) Запуск UI smoke тестов
+      # 8️⃣ Запуск UI smoke тестов
       - name: Run UI smoke tests
         run: |
           pytest -m "smoke and ui" -vv -ra \
                  --alluredir=allure-results
 
-      # 9) Сохраняем allure-results как артефакт (для локального анализа)
+      # 9️⃣ Проверяем наличие allure-results
+      - name: Check allure-results content
+        if: always()
+        run: |
+          echo "Checking allure-results folder:"
+          ls -la allure-results || echo "❌ No allure-results directory found"
+
+      # 🔟 Загружаем "сырые" результаты
       - name: Upload Allure results (raw)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: allure-results
-          if-no-files-found: error
+          if-no-files-found: warn
 
-      # 10) Генерируем HTML-отчёт
+      # 1️⃣1️⃣ Генерация HTML отчёта
       - name: Generate Allure HTML report
         if: always()
         run: |
@@ -94,7 +103,7 @@ jobs:
           allure generate allure-results -o allure-report --clean
           ls -la allure-report | head -n 30
 
-      # 11) Публикуем Allure Report на GitHub Pages
+      # 1️⃣2️⃣ Публикация на GitHub Pages
       - name: Deploy Allure Report to GitHub Pages
         if: always() && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
@@ -104,7 +113,7 @@ jobs:
           publish_branch: gh-pages
           force_orphan: true
 
-      # 12) Комментируем ссылку на отчёт в PR
+      # 1️⃣3️⃣ Комментарий в PR со ссылкой
       - name: Comment report URL
         if: always()
         uses: marocchino/sticky-pull-request-comment@v2
