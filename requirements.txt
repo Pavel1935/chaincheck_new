@@ -9,3 +9,4 @@ playwright>=1.41.0
 pytest-playwright
 loguru
 PyJWT==2.9.0
+psycopg2-binary==2.9.9
