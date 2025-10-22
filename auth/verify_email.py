@@ -12,7 +12,7 @@ class TestVerifyEmail:
 
         body = {
             "email": 'pashkarob@gmail.com',
-            "code": "687821"
+            "code": "273858"
         }
 
         response = requests.post(url, json=body)

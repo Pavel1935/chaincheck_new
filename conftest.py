@@ -9,6 +9,8 @@ from playwright.sync_api import sync_playwright
 from pages.login_page import LoginPage
 from contextlib import suppress
 import json
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -270,6 +272,25 @@ def verification_code_redis():
         return get_verification_code(email=email)
     return _get
 
+    # ЛОГИРОВАНИЕ
+    def _configure_logging():
+        # уровень берём из переменной окружения, по умолчанию INFO
+        level = os.getenv("LOG_LEVEL", "INFO").upper()
+        logging.basicConfig(
+            level=getattr(logging, level, logging.INFO),
+            format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+        )
+        # чтобы requests не шумел
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
+
+    _configured = False
+    @pytest.hookimpl(tryfirst=True)
+    def pytest_configure(config):
+        global _configured
+        if not _configured:
+            _configure_logging()
+            _configured = True
+
 # ПОДКЛЮЧЕНИЕ К PostgreSQL
 @pytest.fixture(scope="session")
 def db_conn():
@@ -280,11 +301,11 @@ def db_conn():
     """
     # создаём соединение с базой
     conn = psycopg2.connect(
-        dbname="your_db",        # название твоей БД
+        dbname="backend",        # название твоей БД
         user="postgres",         # имя пользователя PostgreSQL
-        password="password",     # пароль
-        host="localhost",        # адрес сервера (например localhost или IP)
-        port="5432",             # стандартный порт PostgreSQL
+        password="aik4eeheifai",     # пароль
+        host="167.235.223.2",        # адрес сервера (например localhost или IP)
+        port="55432",             # стандартный порт PostgreSQL
     )
 
     # "yield" означает, что мы отдаём соединение тестам
@@ -311,25 +332,6 @@ def get_user_role(conn, email):
 
         # если пользователь найден — возвращаем его роль
         return result["role"] if result else None
-
-    # ЛОГИРОВАНИЕ
-    def _configure_logging():
-        # уровень берём из переменной окружения, по умолчанию INFO
-        level = os.getenv("LOG_LEVEL", "INFO").upper()
-        logging.basicConfig(
-            level=getattr(logging, level, logging.INFO),
-            format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
-        )
-        # чтобы requests не шумел
-        logging.getLogger("urllib3").setLevel(logging.WARNING)
-
-    _configured = False
-    @pytest.hookimpl(tryfirst=True)
-    def pytest_configure(config):
-        global _configured
-        if not _configured:
-            _configure_logging()
-            _configured = True
 
 #ФИКСУТРА КОТОТАЯ МОКИРУЕТ ПОЛУЧЕНИЕ ВЕРИФИКАЦИОННОГО КОДА ИЗ РЕДИС
 # @pytest.fixture

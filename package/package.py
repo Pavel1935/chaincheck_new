@@ -4,6 +4,7 @@ from Constants import Constants
 from conftest import tokens
 
 
+@pytest.mark.usefixtures("class_tokens")
 class TestPackage:
 
     def test_package(self, class_tokens):
@@ -19,7 +20,6 @@ class TestPackage:
             }
 
         headers = {'Authorization': 'Bearer ' + access_token}
-
         response = requests.post(url, headers=headers, json=payload)
         print("RESPONSE TEXT:", response.text)
 
@@ -34,9 +34,9 @@ class TestPackage:
             ("title", "!:,.;/"),
             ("title", "123")
         ])
-    def test_package_positive_title(self, tokens, data, value):
+    def test_package_positive_title(self, class_tokens, data, value):
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             data: value,
@@ -61,9 +61,9 @@ class TestPackage:
             ("count_checks", 500),
             ("count_checks", 1000000)
         ])
-    def test_package_positive_count_checks(self, tokens, data_1, value_1):
+    def test_package_positive_count_checks(self, class_tokens, data_1, value_1):
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             "title": "ВпередНашСпартакМосква",
@@ -89,9 +89,9 @@ class TestPackage:
             ("price_usd", "500"),
             ("price_usd", "1000000")
         ])
-    def test_package_positive_price_usd(self, tokens, data_2, value_2):
+    def test_package_positive_price_usd(self, class_tokens, data_2, value_2):
         url = Constants.API_URL + "/package"
-        access_token = tokens["access_token"]
+        access_token = class_tokens["access_token"]
 
         payload = {
             "title": "ВпередНашСпартакМосква",
