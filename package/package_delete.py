@@ -4,11 +4,11 @@ from conftest import class_tokens
 
 
 class TestPackageDelete:
-    def test_package_delete(self, class_tokens):
+    def test_package_delete(self, tokens):
 
-        package_id = "0fe08122-90c6-4b0f-a962-997abd45576f"
+        package_id = "c99fdb3e-6d9d-4cca-9adb-a016fb5c50bb"
         url = Constants.API_URL + "/package/" + package_id
-        access_token = class_tokens["access_token"]
+        access_token = tokens["access_token"]
 
         payload = {
         }
@@ -23,7 +23,7 @@ class TestPackageDelete:
 
     def test_package_delete_invalid_id(self, class_tokens):
 
-        package_id = "Спартак Москва"
+        package_id = "Москва"
         url = Constants.API_URL + "/package/" + package_id
         access_token = class_tokens["access_token"]
 

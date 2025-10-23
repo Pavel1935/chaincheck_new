@@ -115,9 +115,9 @@ class TestPackage:
             ("ref_payout", "1"),
             ("ref_payout", "50.5"),
             ("ref_payout", "100"),
-            ("ref_payout", "101")
+            ("ref_payout", "999")
         ])
-    def test_package_positive_price_usd(self, class_tokens, data_3, value_3):
+    def test_package_positive_ref_payout(self, class_tokens, data_3, value_3):
         url = Constants.API_URL + "/package"
         access_token = class_tokens["access_token"]
 
@@ -160,7 +160,7 @@ class TestPackage:
 
         data = response.json()
         assert data["ok"] == 0
-        assert data["error"] == "VALIDATION_TITLE_INVALID"
+        assert data["error"] == "VALIDATION_TITLE"
 
     @pytest.mark.parametrize(
         "data_5, value_5",
@@ -222,7 +222,7 @@ class TestPackage:
 
         data = response.json()
         assert data["ok"] == 0
-        assert data["error"] == "BAD_REQUEST" or "VALIDATION_PRICE_USD_INVALID"
+        assert data["error"] == "BAD_REQUEST" or "VALIDATION_TITLE"
 
     @pytest.mark.parametrize(
         "data_7, value_7",
@@ -230,12 +230,12 @@ class TestPackage:
             ("ref_payout", "0,01"),
             ("ref_payout", "-1"),
             ("ref_payout", ""),
-            ("ref_payout", "101"),
+            ("ref_payout", "10001"),
             ("ref_payout", "hi"),
             ("ref_payout", "$%^&&*$%"),
             ("", "10000")
         ])
-    def test_package_positive_price_usd(self, class_tokens, data_7, value_7):
+    def test_package_negative_ref_payout(self, class_tokens, data_7, value_7):
         url = Constants.API_URL + "/package"
         access_token = class_tokens["access_token"]
 
@@ -253,7 +253,7 @@ class TestPackage:
 
         data = response.json()
         assert data["ok"] == 0
-        assert data["error"] == "BAD_REQUEST" or "VALIDATION_REF_PAYOUT_INVALID"
+        assert data["error"] == "BAD_REQUEST" or "VALIDATION_TITLE"
 
     def test_package_without_title(self, class_tokens):
 

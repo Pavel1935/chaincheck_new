@@ -4,7 +4,6 @@ from Constants import Constants
 from conftest import tokens
 
 
-
 class TestPackagePut:
     def test_package_put(self, tokens):
 
@@ -12,8 +11,8 @@ class TestPackagePut:
         access_token = tokens["access_token"]
 
         payload = {
-              "id": "72bf6f0f-7bb5-46bc-8e91-b7ff6e4bc663",
-              "title": "1",
+              "id": "e189fe47-61d3-4ca0-884e-537f70e7e060",
+              "title": "Торпедо",
               "price_usd": "11",
               "count_checks": 2,
               "ref_payout": "1",

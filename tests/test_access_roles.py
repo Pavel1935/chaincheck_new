@@ -48,13 +48,12 @@ class TestAccessRoles:
         pytest.param("1@1.io", "1@1.io", id="moderator"),
         pytest.param("oukb1147@gmail.com", "oukb1147@gmail.com", id="admin"),
     ], indirect=["tokens_by_email"])
-    def test_package_access(self, tokens_by_email, email):
+    def test_package_access_post(self, tokens_by_email, email):
         url = f"{Constants.API_URL}/package"
         access_token = tokens_by_email["access_token"]
 
-        # 2️⃣ Отправляем запрос
         payload = {
-            "title": "Тестовый пакет",
+            "title": "Пакет на удаление",
             "count_checks": 10,
             "price_usd": "1",
             "ref_payout": "0"
@@ -64,8 +63,38 @@ class TestAccessRoles:
         data = response.json()
         print(data)
 
-        """ проверяем роль залогининого пользователя """
+        if email == "pashkarob@gmail.com":
+            assert data["ok"] == 0 and data["error"] == "NO_PERMISSION"
+        else:
+            assert data["ok"] == 1
 
+        """
+        проверяем что можем поменять пакет с проверками для пользака
+        с разными ролями
+        """
+
+    # @pytest.mark.parametrize("tokens_by_email,email", [
+    #     pytest.param("pashkarob@gmail.com", "pashkarob@gmail.com", id="customer"),
+    #     pytest.param("1@1.io", "1@1.io", id="moderator"),
+    #     pytest.param("oukb1147@gmail.com", "oukb1147@gmail.com", id="admin"),
+    # ], indirect=["tokens_by_email"])
+    # def test_package_access_put(self, tokens_by_email, email):
+    #     url = f"{Constants.API_URL}/package"
+    #     access_token = tokens_by_email["access_token"]
+    #
+    #     payload = {
+    #         "title": "РазДваТриЗенитушкаСамзнаешь",
+    #         "count_checks": 10,
+    #         "price_usd": "88",
+    #         "ref_payout": "5"
+    #     }
+    #     headers = {'Authorization': f'Bearer {access_token}'}
+    #     response = requests.put(url, headers=headers, json=payload, verify=False)
+    #     data = response.json()
+    #     print(data)
+
+
+        """ проверяем роль залогининого пользователя """
     @pytest.mark.parametrize("tokens_by_email,email,expected_role", [
         pytest.param("1@2.io", "1@2.io", 1, id="customer"),  # обычный пользователь
         pytest.param("1@1.io", "1@1.io", 2, id="moderator"),  # модератор

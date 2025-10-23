@@ -16,8 +16,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 _TOKENS_CACHE = None  # защита от повторного логина
 
-# ФИКСТУРА КОТОРАЯ ИСПОЛЬЗУЕТСЯ ВО ВСЕХ ТЕСТАХ, ГДЕ СОХРАНЯЕТ ДАННЫЕ В ОДНОЙ
-# СЕССИИ И НЕ ИСПОЛЬЗУЕТ НОВЫЕ ЛОГИНЫ ДЛЯ ПОСЛЕДУЮЩИХ ТЕСТОВ!!!
+"""ФИКСТУРА КОТОРАЯ ИСПОЛЬЗУЕТСЯ ВО ВСЕХ ТЕСТАХ, ГДЕ СОХРАНЯЕТ ДАННЫЕ В ОДНОЙ
+СЕССИИ И НЕ ИСПОЛЬЗУЕТ НОВЫЕ ЛОГИНЫ ДЛЯ ПОСЛЕДУЮЩИХ ТЕСТОВ!!! """
 @pytest.fixture(scope="session")
 def class_tokens():
     """
@@ -61,7 +61,7 @@ def class_tokens():
     }
     return _TOKENS_CACHE
 
-# ФИКСТУРА С НОВОЙ АВТОРИЗАЦИЕЙ, КОГДА НУЖЕН НОВЫЙ ТОКЕН ВХОДА КАЖДЫЙ РАЗ!!!!
+"""ФИКСТУРА С НОВОЙ АВТОРИЗАЦИЕЙ, КОГДА НУЖЕН НОВЫЙ ТОКЕН ВХОДА КАЖДЫЙ РАЗ!!!!"""
 @pytest.fixture(scope="function")
 def tokens():
     login_url = Constants.API_URL + "/auth/login"
@@ -115,59 +115,63 @@ def tokens():
                     json={}
                  )
 
-# ФИКСТУРА ПАРАМЕТРИЗОВАННАЯ С НОВОЙ АВТОРИЗАЦИЕЙ ДЛЯ КАЖДОЙ РОЛИ(EMAIL),
-# КОГДА НУЖЕН НОВЫЙ ТОКЕН ВХОДА КАЖДЫЙ РАЗ!!!!
-
+"""ФИКСТУРА ПАРАМЕТРИЗОВАННАЯ С НОВОЙ АВТОРИЗАЦИЕЙ ДЛЯ КАЖДОЙ РОЛИ(EMAIL),
+# КОГДА НУЖЕН НОВЫЙ ТОКЕН ВХОДА КАЖДЫЙ РАЗ КАК ДЛЯ ПАРАМЕТРИЗАЦИИ ТАК И НЕТ!!!!"""
 @pytest.fixture(scope="function")
-def tokens_by_email(request):
+def tokens_by_email(request=None):
     """
-    Логинится под конкретным email (через параметризацию).
-    Используется только для тестов, где нужно проверить разные роли.
-    Пример:
-      @pytest.mark.parametrize("tokens_by_email,email", [...], indirect=["tokens_by_email"])
+    Универсальная фикстура логина по email:
+    - через параметризацию (indirect=["tokens_by_email"])
+    - или напрямую из теста: tokens_by_email("1@1.io")
     """
-    # 1️⃣ Получаем email из параметра
-    email = request.param
-    print(f"[LOGIN FIXTURE] Авторизация под {email}")
 
-    # 2️⃣ Отправляем запрос /auth/login
-    login_url = f"{Constants.API_URL.rstrip('/')}/auth/login"
-    payload = {
-        "email": email,
-        "recaptcha_token": "SpartakChampion",
-        "recaptcha_version": "v2",
-    }
-    login_response = requests.post(login_url, json=payload)
-    login_response.raise_for_status()
-    data = login_response.json()
-    print(f"[LOGIN] RESPONSE ({email}):", data)
+    def _login(email):
+        print(f"[LOGIN FIXTURE] Авторизация под {email}")
 
-    if not data.get("ok"):
-        pytest.fail(f"Login failed for {email}: {data}")
+        login_url = f"{Constants.API_URL.rstrip('/')}/auth/login"
+        payload = {
+            "email": email,
+            "recaptcha_token": "SpartakChampion",
+            "recaptcha_version": "v2",
+        }
+        login_response = requests.post(login_url, json=payload)
+        login_response.raise_for_status()
+        data = login_response.json()
+        print(f"[LOGIN] RESPONSE ({email}):", data)
 
-    # 3️⃣ Получаем код подтверждения из Redis
-    code = get_verification_code(email=email)
-    print(f"[CODE] Redis вернул код {code} для {email}")
+        if not data.get("ok"):
+            pytest.fail(f"Login failed for {email}: {data}")
 
-    # 4️⃣ Подтверждаем код
-    verify_url = f"{Constants.API_URL.rstrip('/')}/auth/verify-email"
-    verify_payload = {"email": email, "code": code}
-    verify_response = requests.post(verify_url, json=verify_payload)
-    verify_response.raise_for_status()
-    verify_data = verify_response.json()
-    print(f"[VERIFY] RESPONSE ({email}):", verify_data)
+        # Получаем код из Redis
+        code = get_verification_code(email=email)
+        print(f"[CODE] Redis вернул код {code} для {email}")
 
-    assert verify_data.get("ok") == 1, f"Verify failed for {email}: {verify_data}"
+        # Подтверждаем email
+        verify_url = f"{Constants.API_URL.rstrip('/')}/auth/verify-email"
+        verify_payload = {"email": email, "code": code}
+        verify_response = requests.post(verify_url, json=verify_payload)
+        verify_response.raise_for_status()
+        verify_data = verify_response.json()
+        print(f"[VERIFY] RESPONSE ({email}):", verify_data)
 
-    # 5️⃣ Возвращаем словарь токенов
-    return {
-        "access_token": verify_data.get("access-token"),
-        "refresh_token": verify_response.cookies.get("refresh_token"),
-    }
+        assert verify_data.get("ok") == 1, f"Verify failed for {email}: {verify_data}"
+
+        return {
+            "access_token": verify_data.get("access-token"),
+            "refresh_token": verify_response.cookies.get("refresh_token"),
+        }
+
+    # Если фикстура используется через parametrize → request.param будет
+    if request and hasattr(request, "param"):
+        return _login(request.param)
+
+    # Если вызывается напрямую → вернём саму функцию логина
+    return _login
 
 
 
-#ФИКСТУРА ПОЛУЧЕНИЯ ТОКЕНА АВТОРИЗАЦИИ
+
+"""ФИКСТУРА ПОЛУЧЕНИЯ ТОКЕНА АВТОРИЗАЦИИ"""
 @pytest.fixture
 def get_access_token(tokens):
     url = "https://check-dev.g5dl.com/api/v1/auth/refresh-token"
@@ -214,7 +218,7 @@ def verification_code_fixture():
     return code
 
 
-# УТИЛИТА КОТОТАЯ ОЖИДАЕТ ГОТОВНОСТЬ ОТЧЕТА AML В API ТЕСТАХ
+"""УТИЛИТА КОТОТАЯ ОЖИДАЕТ ГОТОВНОСТЬ ОТЧЕТА AML В API ТЕСТАХ"""
 def wait_for_report_ready(report_id, headers, base_url, timeout=10, interval=0.5):
     """
     Ожидает пока отчет будет готов в течение timeout секунд.
@@ -239,7 +243,7 @@ def wait_for_report_ready(report_id, headers, base_url, timeout=10, interval=0.5
 
     raise TimeoutError(f"Report {report_id} was not ready in {timeout} seconds")
 
-# ФИКСТУРА КОТОРАЯ ЗАПУСКАЕТ UI Playwright и CI
+"""ФИКСТУРА КОТОРАЯ ЗАПУСКАЕТ UI Playwright и CI"""
 @pytest.fixture
 def login_page():
     logger.info("Запуск Playwright и браузера")
@@ -291,7 +295,7 @@ def verification_code_redis():
             _configure_logging()
             _configured = True
 
-# ПОДКЛЮЧЕНИЕ К PostgreSQL
+"""ПОДКЛЮЧЕНИЕ К PostgreSQL"""
 @pytest.fixture(scope="session")
 def db_conn():
     """
@@ -333,7 +337,7 @@ def get_user_role(conn, email):
         # если пользователь найден — возвращаем его роль
         return result["role"] if result else None
 
-#ФИКСУТРА КОТОТАЯ МОКИРУЕТ ПОЛУЧЕНИЕ ВЕРИФИКАЦИОННОГО КОДА ИЗ РЕДИС
+# """ФИКСУТРА КОТОТАЯ МОКИРУЕТ ПОЛУЧЕНИЕ ВЕРИФИКАЦИОННОГО КОДА ИЗ РЕДИС"""
 # @pytest.fixture
 # def verification_code_redis_moc():
 #     def _get(email: str) -> str:
