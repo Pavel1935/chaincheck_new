@@ -53,9 +53,9 @@ class LoginPage(BasePage):
         self.select_network(network_name)
         self.wait_and_click(LoginLocators.CHECK_FORM_BUTTON)
 
-
     def check_120sec_pause(self):
-        locator = self.page.get_by_text("Error: unknown auth error")
+        locator = self.page.get_by_text("Error: we just sent you a code, "
+                                        "please wait 2 minutes if you want to receive a new one")
         expect(locator).to_be_visible(timeout=5000)
 
     def enter_incorrect_address(self):
