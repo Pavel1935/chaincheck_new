@@ -1,0 +1,2 @@
+2025-11-01 08:58:59.187 | INFO     | tests.test_smoke:test_smoke_negative_api_old_access_token:184 - Начинаю тест: протухшего access_token
+2025-11-01 08:59:01.217 | INFO     | tests.test_smoke:test_smoke_negative_api_old_access_token:210 - Проверяю результат
