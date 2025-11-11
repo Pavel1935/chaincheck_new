@@ -11,6 +11,12 @@ from contextlib import suppress
 import json
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import pytest
+from pathlib import Path
+from telethon.sync import TelegramClient
+
+# Файл сессии лежит рядом с тестами (например tests/chainscheck_qa_bot.session)
+SESSION_PATH = str(Path(__file__).parent / "chainscheck_qa_bot")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -336,6 +342,22 @@ def get_user_role(conn, email):
 
         # если пользователь найден — возвращаем его роль
         return result["role"] if result else None
+
+    """ПОДКЛЮЧЕНИЕ К Telegram"""
+
+@pytest.fixture(scope="session")
+def telegram_client():
+    """
+    Один раз авторизуется в Telegram и сохраняет сессию.
+    На следующих запусках просто переподключается.
+    """
+    client = TelegramClient(SESSION_PATH, Constants.API_ID, Constants.API_HASH)
+    client.start(phone=Constants.PHONE_NUMBER)  # если сессии нет — запросит код только первый раз
+    print("\n[SESSION FIXTURE] Telegram клиент подключён.")
+    yield client
+    client.disconnect()
+    print("[SESSION FIXTURE] Telegram клиент отключён.")
+
 
 # """ФИКСУТРА КОТОТАЯ МОКИРУЕТ ПОЛУЧЕНИЕ ВЕРИФИКАЦИОННОГО КОДА ИЗ РЕДИС"""
 # @pytest.fixture
