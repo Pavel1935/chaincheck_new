@@ -11,7 +11,7 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright/python:v1.56.0-jammy
+      image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
       options: --ipc=host --shm-size=1g
 
     permissions:
