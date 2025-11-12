@@ -59,4 +59,3 @@ class TestChainsCheckBotSync:
 
         assert "omething" in text.lower() or "то-то" in text.lower()
 
-
