@@ -5,9 +5,10 @@ pytest
 pytest-xdist
 pytest-rerunfailures
 allure-pytest
-playwright>=1.41.0
-pytest-playwright
+playwright==1.56.0
+pytest-playwright==0.7.1
 loguru
 PyJWT==2.9.0
 psycopg2-binary==2.9.9
 telethon
+
