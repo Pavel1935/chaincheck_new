@@ -1,6 +1,7 @@
 from playwright.sync_api import Page
 from playwright.sync_api import expect
 from locators.login_locators import LoginLocators
+from Constants import Constants
 
 class BasePage:
     def __init__(self, page: Page):
@@ -29,5 +30,6 @@ class BasePage:
         expect(element).to_be_visible(timeout=timeout)
         expect(element).to_be_enabled(timeout=timeout)
         element.click()
+
 
 
