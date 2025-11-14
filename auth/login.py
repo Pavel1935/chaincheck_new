@@ -1,5 +1,6 @@
 import requests
 from Constants import Constants
+import pytest
 
 
 class TestLogin:
@@ -10,9 +11,11 @@ class TestLogin:
                    "recaptcha_token": "SpartakChampion",
                    "recaptcha_version": "v2"
                    }
-
-        response = requests.post(url, json=payload)
-        print("RESPONSE TEXT:", response.text)
+        try:
+            response = requests.post(url, json=payload)
+            print("RESPONSE TEXT:", response.text)
+        except Exception as e:
+            pytest.fail(f"❌ Ошибка при запросе или JSON: {e}")
 
         data = response.json()
         assert data["ok"] == 1

@@ -26,9 +26,11 @@ class TestCheckSmokeAPI:
         access_token = class_tokens["access_token"]
 
         headers = {'Authorization': f'Bearer {access_token}'}
-
-        response = requests.post(url, headers=headers, json=payload)
-        print("RESPONSE TEXT:", response.text)
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            print("RESPONSE TEXT:", response.text)
+        except Exception as e:
+            pytest.fail(f"❌ Ошибка при запросе или JSON: {e}")
 
         data = response.json()
         report_id_smoke = data["result"]["report_id"]
@@ -37,8 +39,12 @@ class TestCheckSmokeAPI:
         assert data["ok"] == 1
 
         url_check = Constants.API_URL + "/aml/check/history/one"
-        response = requests.post(url_check, headers=headers, json={"report_id": report_id_smoke})
-        print("RESPONSE TEXT:", response.text)
+
+        try:
+            response = requests.post(url_check, headers=headers, json={"report_id": report_id_smoke})
+            print("RESPONSE TEXT:", response.text)
+        except Exception as e:
+            pytest.fail(f"❌ Ошибка при запросе или JSON: {e}")
 
         data = response.json()
         assert data["ok"] == 1

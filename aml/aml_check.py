@@ -15,7 +15,7 @@ class TestAmlCheck:
             ("tron", "TFazJsQKQd8J1ryoogBnH6kkwm951rscHa"),
         ]
     )
-    def test_aml_check(self, class_class_tokens, network, wallet):
+    def test_aml_check(self, class_tokens, network, wallet):
         url = Constants.API_URL + "aml/check"
 
         payload = {
@@ -23,14 +23,12 @@ class TestAmlCheck:
             "network": network
         }
 
-        access_token = class_class_tokens["access_token"]
-
+        access_token = class_tokens["access_token"]
         headers = {'Authorization': f'Bearer {access_token}'}
 
         response = requests.post(url, headers=headers, json=payload)
-        print("RESPONSE TEXT:", response.text)
-
         data = response.json()
+        print("RESPONSE TEXT:", response.text)
         assert data["ok"] == 1
         assert data["result"]["report_id"]
 
