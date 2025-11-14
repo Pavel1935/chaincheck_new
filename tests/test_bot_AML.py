@@ -1,27 +1,38 @@
 import time
 BOT_USERNAME = "chainscheck_bot"
+import pytest
+import allure
 
 
 class TestChainsCheckBotSync:
+    @pytest.mark.smoke
+    @pytest.mark.bot
+    @allure.step('Проверка получения баланса')
     def test_balance_button(self, telegram_client):
         msg = telegram_client.get_messages(BOT_USERNAME, limit=1)[0]
-        msg.click(text="Баланс")  # Пробуем нажать “Баланс”
+        time.sleep(2)
+        try:
+            msg.click(text="Баланс")  # Пробуем нажать “Баланс”
+            print('Нажата кнопка: Баланс')
+        except Exception:
+            msg.click(text="Balance")
+            print('Нажата кнопка: Balance')
 
         time.sleep(3)
         reply = telegram_client.get_messages(BOT_USERNAME, limit=1)[0]
         text = reply.text.strip()
 
         print(f"\nОтвет бота:\n{text}")  #Делаем assert по тексту из ответа
-        assert "провер" in text.lower() or "остал" in text.lower(), "Ответ не похож на баланс"
+        assert "проверки" in text.lower() or "have" in text.lower(), "Ответ не похож на баланс"
 
     def test_language_button(self, telegram_client):
         msg = telegram_client.get_messages(BOT_USERNAME, limit=3)[0]
         try:  #Пробуем нажать “Язык” или “Language”
             msg.click(text="Язык")
-            print("✅ Нажата кнопка: Язык")
+            print("Нажата кнопка: Язык")
         except Exception:
             msg.click(text="Language")
-            print("✅ Нажата кнопка: Language")
+            print("Нажата кнопка: Language")
 
         time.sleep(3)
         msg = telegram_client.get_messages(BOT_USERNAME, limit=3)[0]
@@ -34,6 +45,9 @@ class TestChainsCheckBotSync:
         print(f"\nОтвет бота:\n{text}")
         assert "Готов" in text.lower() or "кошелек" in text.lower() #Делаем assert по тексту из ответа
 
+    @pytest.mark.smoke
+    @pytest.mark.bot
+    @allure.step('Позитивная проверка получения оценик риска')
     def test_get_score(self, telegram_client):
         # telegram_client.get_messages(BOT_USERNAME, limit=3)[0]
         telegram_client.send_message(BOT_USERNAME, "0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f") #Вводим адрес валидный
@@ -43,7 +57,6 @@ class TestChainsCheckBotSync:
 
         time.sleep(3)
         reply = telegram_client.get_messages(BOT_USERNAME, limit=3)[0]
-
         text = reply.text.strip()
 
         print(f"\nОтвет бота:\n{text}")
@@ -58,4 +71,6 @@ class TestChainsCheckBotSync:
         print(f"\nОтвет бота:\n{text}")
 
         assert "omething" in text.lower() or "то-то" in text.lower()  #Делаем assert по тексту из ответа
+
+
 
