@@ -1,0 +1,2 @@
+2025-11-15 06:27:40.651 | INFO     | tests.test_smoke:test_check_smoke_bsc_ok:57 - Начинаю тест: проверка адреса в сети BSC
+2025-11-15 06:27:45.340 | INFO     | tests.test_smoke:test_check_smoke_bsc_ok:84 - Проверяю результат

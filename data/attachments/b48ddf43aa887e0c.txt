@@ -1,0 +1,3 @@
+2025-11-15 06:27:35,730 - INFO - [TOKENS] Выполняю логин для всей сессии
+2025-11-15 06:27:37.351 | INFO     | tests.test_smoke:test_check_smoke_btc_ok:18 - Начинаю тест: проверка адреса в сети BTC
+2025-11-15 06:27:40.647 | INFO     | tests.test_smoke:test_check_smoke_btc_ok:51 - Проверяю результат
