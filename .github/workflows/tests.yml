@@ -125,7 +125,7 @@ jobs:
 
   # 🧠 Новый job — Telegram Bot тест (раз в 2 недели)
   bot_test:
-    if: github.event_name == 'schedule'   # выполняется только по расписанию
+    if: github.event_name == 'schedule' || github.event_name == 'push'  # выполняется и по рассписанию и по push
     runs-on: ubuntu-latest
     needs: smoke                          # сначала дождется смоков
     container:
