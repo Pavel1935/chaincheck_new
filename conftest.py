@@ -257,25 +257,6 @@ def verification_code_redis():
         return get_verification_code(email=email)
     return _get
 
-    # ЛОГИРОВАНИЕ
-    def _configure_logging():
-        # уровень берём из переменной окружения, по умолчанию INFO
-        level = os.getenv("LOG_LEVEL", "INFO").upper()
-        logging.basicConfig(
-            level=getattr(logging, level, logging.INFO),
-            format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
-        )
-        # чтобы requests не шумел
-        logging.getLogger("urllib3").setLevel(logging.WARNING)
-
-    _configured = False
-    @pytest.hookimpl(tryfirst=True)
-    def pytest_configure(config):
-        global _configured
-        if not _configured:
-            _configure_logging()
-            _configured = True
-
 """ПОДКЛЮЧЕНИЕ К PostgreSQL"""
 @pytest.fixture(scope="session")
 def db_conn():
