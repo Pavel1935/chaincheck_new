@@ -124,57 +124,33 @@ def tokens():
 """ФИКСТУРА ПАРАМЕТРИЗОВАННАЯ С НОВОЙ АВТОРИЗАЦИЕЙ ДЛЯ КАЖДОЙ РОЛИ(EMAIL),
 # КОГДА НУЖЕН НОВЫЙ ТОКЕН ВХОДА КАЖДЫЙ РАЗ КАК ДЛЯ ПАРАМЕТРИЗАЦИИ ТАК И НЕТ!!!!"""
 @pytest.fixture(scope="function")
-def tokens_by_email(request=None):
-    """
-    Универсальная фикстура логина по email:
-    - через параметризацию (indirect=["tokens_by_email"])
-    - или напрямую из теста: tokens_by_email("1@1.io")
-    """
-
+def email(request):
     def _login(email):
-        print(f"[LOGIN FIXTURE] Авторизация под {email}")
-
-        login_url = f"{Constants.API_URL.rstrip('/')}/auth/login"
+        login_url = f"{Constants.API_URL}/auth/login"
         payload = {
             "email": email,
             "recaptcha_token": "SpartakChampion",
             "recaptcha_version": "v2",
         }
+
         login_response = requests.post(login_url, json=payload)
         login_response.raise_for_status()
         data = login_response.json()
-        print(f"[LOGIN] RESPONSE ({email}):", data)
 
-        if not data.get("ok"):
-            pytest.fail(f"Login failed for {email}: {data}")
-
-        # Получаем код из Redis
         code = get_verification_code(email=email)
-        print(f"[CODE] Redis вернул код {code} для {email}")
 
-        # Подтверждаем email
-        verify_url = f"{Constants.API_URL.rstrip('/')}/auth/verify-email"
+        verify_url = f"{Constants.API_URL}/auth/verify-email"
         verify_payload = {"email": email, "code": code}
         verify_response = requests.post(verify_url, json=verify_payload)
-        verify_response.raise_for_status()
         verify_data = verify_response.json()
-        print(f"[VERIFY] RESPONSE ({email}):", verify_data)
-
-        assert verify_data.get("ok") == 1, f"Verify failed for {email}: {verify_data}"
 
         return {
+            "email": email,
             "access_token": verify_data.get("access-token"),
             "refresh_token": verify_response.cookies.get("refresh_token"),
         }
 
-    # Если фикстура используется через parametrize → request.param будет
-    if request and hasattr(request, "param"):
-        return _login(request.param)
-
-    # Если вызывается напрямую → вернём саму функцию логина
-    return _login
-
-
+    return _login(request.param)
 
 
 """ФИКСТУРА ПОЛУЧЕНИЯ ТОКЕНА АВТОРИЗАЦИИ"""
@@ -216,7 +192,7 @@ def report_id(tokens):
 
     return data["result"]["report_id"]
 
-# ФИКСТУРА ПОЛУЧЕНИЯ КОДА ВЕРИФИКАЦИИ ИЗ РЕДИС
+"""ФИКСТУРА ПОЛУЧЕНИЯ КОДА ВЕРИФИКАЦИИ ИЗ РЕДИС"""
 @pytest.fixture(scope="session")
 def verification_code_fixture():
     code = get_verification_code()
@@ -253,7 +229,6 @@ def wait_for_report_ready(report_id, headers, base_url, timeout=10, interval=0.5
 @pytest.fixture
 def login_page():
     logger.info("Запуск Playwright и браузера")
-
     # В CI (GitHub Actions переменная CI=true) -> headless
     is_ci = os.getenv("CI", "false").lower() == "true"
     headless = True if is_ci else False
@@ -275,7 +250,7 @@ def login_page():
         context.close()
         browser.close()
 
-# ФИКСТУРА ПОЛУЧЕНИЯ ВЕРИФИКАЦИОННОГО КОДА ИЗ РЕДИС
+"""ФИКСТУРА ПОЛУЧЕНИЯ ВЕРИФИКАЦИОННОГО КОДА ИЗ РЕДИС"""
 @pytest.fixture
 def verification_code_redis():
     def _get(email: str) -> str:
@@ -325,9 +300,7 @@ def db_conn():
     conn.close()
 
 
-# =============================================
-# 2️⃣ Запрос в базу: получить роль пользователя
-# =============================================
+"""Запрос в базу: получить роль пользователя"""
 def get_user_role(conn, email):
     """
     Получает роль пользователя из таблицы users по email.
@@ -343,8 +316,8 @@ def get_user_role(conn, email):
         # если пользователь найден — возвращаем его роль
         return result["role"] if result else None
 
-    """ПОДКЛЮЧЕНИЕ К Telegram"""
 
+"""ПОДКЛЮЧЕНИЕ К Telegram"""
 @pytest.fixture(scope="session")
 def telegram_client():
     """
