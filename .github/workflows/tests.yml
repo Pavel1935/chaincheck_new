@@ -149,7 +149,7 @@ jobs:
       - name: Restore Telegram session
         run: |
           mkdir -p tests
-          echo "$TG_SESSION_B64" | base64 --decode > tests/chainscheck_qa_bot.session
+          echo "$TG_SESSION_B64" | base64 --decode > chainscheck_qa_bot.session
         env:
           TG_SESSION_B64: ${{ secrets.TG_SESSION_B64 }}
 
