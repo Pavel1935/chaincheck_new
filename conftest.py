@@ -16,7 +16,7 @@ from pathlib import Path
 from telethon.sync import TelegramClient
 
 # Файл сессии лежит рядом с тестами (например tests/chainscheck_qa_bot.session)
-SESSION_PATH = str(Path(__file__).parent.parent / "chainscheck_qa_bot.session")
+SESSION_PATH = str(Path(__file__).parent / "chainscheck_qa_bot.session")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
