@@ -1,0 +1,5 @@
+2025-11-30 05:13:59,844 - INFO - Запуск Playwright и браузера
+2025-11-30 05:14:00,368 - INFO - Создание объекта LoginPage
+2025-11-30 05:14:00.370 | INFO     | tests.test_smoke:test_email_login_ui:224 - Начинаю тест: вход по email
+2025-11-30 05:14:21.323 | INFO     | tests.test_smoke:test_email_login_ui:233 - Проверяю результат
+2025-11-30 05:14:21,325 - INFO - Закрытие браузера

@@ -1,0 +1,2 @@
+2025-11-30 05:10:47.767 | INFO     | tests.test_smoke:test_check_smoke_ether_ok:90 - Начинаю тест: проверка адреса в сети ETH
+2025-11-30 05:10:51.298 | INFO     | tests.test_smoke:test_check_smoke_ether_ok:117 - Проверяю результат
