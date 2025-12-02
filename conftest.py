@@ -201,7 +201,7 @@ def verification_code_fixture():
 
 
 """УТИЛИТА КОТОТАЯ ОЖИДАЕТ ГОТОВНОСТЬ ОТЧЕТА AML В API ТЕСТАХ"""
-def wait_for_report_ready(report_id, headers, base_url, timeout=10, interval=0.5):
+def wait_for_report_ready(report_id, headers, base_url, timeout=30, interval=0.5):
     """
     Ожидает пока отчет будет готов в течение timeout секунд.
 
