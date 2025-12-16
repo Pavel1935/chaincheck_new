@@ -6,9 +6,7 @@ from conftest import get_user_role
 
 
 class TestCheckRolesLoggedUser:
-
     """Проверяем роль залогининого пользователя"""
-
 
 @pytest.mark.parametrize("tokens_by_email,email,expected_role", [
     pytest.param("1@2.io", "1@2.io", 1, id="customer"),  # обычный пользователь
