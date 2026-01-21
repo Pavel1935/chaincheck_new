@@ -145,7 +145,6 @@ jobs:
       # 🔐 Восстанавливаем Telegram session из GitHub Secret
       - name: Restore Telegram session
         run: |
-          mkdir -p tests
           echo "$TG_SESSION_B64" | base64 --decode > chainscheck_qa_bot.session
         env:
           TG_SESSION_B64: ${{ secrets.TG_SESSION_B64 }}
@@ -173,12 +172,7 @@ jobs:
       - name: Generate Bot HTML Report
         if: always()
         run: |
-          ALLURE_VERSION=2.29.0
-          apt-get update
-          apt-get install -y default-jre wget unzip
-          wget -q https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.zip -O /tmp/allure.zip
-          unzip -q /tmp/allure.zip -d /opt/
-          ln -sf /opt/allure-${ALLURE_VERSION}/bin/allure /usr/bin/allure
+          npm install -g allure-commandline
           allure generate allure-results -o bot-report --clean
 
       # 🌍 Публикуем на GitHub Pages (в подпапку /bot/)
