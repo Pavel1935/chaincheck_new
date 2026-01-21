@@ -145,9 +145,8 @@ jobs:
       # 🔐 Восстанавливаем Telegram session из GitHub Secret
       - name: Restore Telegram session
         run: |
-          echo "$TG_SESSION_B64" | base64 --decode > chainscheck_qa_bot.session
-        env:
-          TG_SESSION_B64: ${{ secrets.TG_SESSION_B64 }}
+          printf '%s' "${{ secrets.TG_SESSION_B64 }}" | base64 -d > chainscheck_qa_bot.session
+          ls -la chainscheck_qa_bot.session
 
       # 📁 Папка для отчетов
       - name: Prepare allure-results
