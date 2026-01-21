@@ -1,8 +1,8 @@
-from telethon import TelegramClient
-from Constants import Constants  # если так называется твой файл
+from telethon.sync import TelegramClient
 from pathlib import Path
+from Constants import Constants  # поправь путь, если нужно
 
-SESSION_PATH = str(Path(__file__).parent / "chainscheck_qa_bot.session")
+SESSION_PATH = str(Path(__file__).parent / "chainscheck_qa_bot")
 
 client = TelegramClient(
     SESSION_PATH,
@@ -12,5 +12,6 @@ client = TelegramClient(
 
 client.start(phone=Constants.PHONE_NUMBER)
 
-print("SESSION CREATED:", SESSION_PATH)
+print("SESSION CREATED AND AUTHORIZED:", SESSION_PATH)
 client.disconnect()
+
