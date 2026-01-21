@@ -11,7 +11,7 @@ class Constants:
     MOCK_EMAIL = "pashkarob@gmail.com"
     API_ID = 39474318
     API_HASH = "31357a0fbd7d8af3a33e4cb7e0ca5ee7"
-    PHONE_NUMBER = "+79257512148"
+    PHONE_NUMBER = "+628135973595"
     BOT_USERNAME = "chainscheck_bot"
     ADDRESS_WALLET = "0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f"
     BUTTON_BALANCE = "Баланс"
