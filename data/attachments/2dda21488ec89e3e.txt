@@ -1,0 +1,5 @@
+2026-01-28 05:23:14,841 - INFO - Запуск Playwright и браузера
+2026-01-28 05:23:15,236 - INFO - Создание объекта LoginPage
+2026-01-28 05:23:15.237 | INFO     | tests.test_smoke:test_incorrect_120sec_pause_ui:239 - Начинаю тест: пауза 120 сек
+2026-01-28 05:23:21.712 | INFO     | tests.test_smoke:test_incorrect_120sec_pause_ui:246 - Проверяю результат
+2026-01-28 05:23:21,713 - INFO - Закрытие браузера
