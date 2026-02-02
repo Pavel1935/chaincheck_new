@@ -132,7 +132,22 @@ jobs:
       - name: Prepare allure-results
         run: rm -rf allure-results && mkdir -p allure-results
 
+      # ✅ (временно) Проверка что секрет реально приходит
+      - name: Debug TG_STRING_SESSION presence (safe)
+        env:
+          TG_STRING_SESSION: ${{ secrets.TG_STRING_SESSION }}
+        run: |
+          python3 - <<'PY'
+          import os, hashlib
+          s = os.getenv("TG_STRING_SESSION", "")
+          print("TG_STRING_SESSION_present:", bool(s))
+          print("TG_STRING_SESSION_len:", len(s))
+          print("TG_STRING_SESSION_sha6:", hashlib.sha256(s.encode()).hexdigest()[:6] if s else None)
+          PY
+
       - name: Run bot tests
+        env:
+          TG_STRING_SESSION: ${{ secrets.TG_STRING_SESSION }}
         run: |
           pytest -m "smoke and bot" -vv -ra \
                  --alluredir=allure-results
