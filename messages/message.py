@@ -4,7 +4,7 @@ import pytest
 
 
 class TestMessage:
-    def test_message(self, class_tokens):
+    def test_message(self):
 
         url = Constants.API_URL + "/message/send"
         payload = {"topic": "GENERAL",

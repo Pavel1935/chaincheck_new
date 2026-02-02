@@ -1,12 +1,12 @@
-name: Smoke tests  # Имя workflow (видно в Actions)
+name: Smoke tests
 
 on:
   push:
-    branches: [ main ]           # Запуск при пушах в main
+    branches: [ main ]
   pull_request:
   schedule:
-    - cron: "0 5 * * *"          # Автозапуск по расписанию: 05:00 UTC (08:00 МСК)
-    - cron: "0 6 */14 * *"       # 🔁 Раз в 2 недели в 06:00 UTC (09:00 МСК)
+    - cron: "0 5 * * *"
+    - cron: "0 6 */14 * *"
 
 jobs:
   smoke:
@@ -21,17 +21,14 @@ jobs:
       id-token: write
 
     steps:
-      # 1️⃣ Забираем код
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Ставим зависимости (pytest + allure)
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install "pytest<8.3.0" "allure-pytest>=2.13.2"
 
-      # 3️⃣ Ставим Allure CLI для генерации HTML
       - name: Install Allure CLI
         run: |
           apt-get update
@@ -42,11 +39,9 @@ jobs:
           ln -sf /opt/allure-${ALLURE_VERSION}/bin/allure /usr/bin/allure
           allure --version
 
-      # 4️⃣ Чистим папку allure-results
       - name: Prepare allure-results
         run: rm -rf allure-results && mkdir -p allure-results
 
-      # 5️⃣ Добавляем метаданные
       - name: Add Allure metadata
         run: |
           mkdir -p allure-results
@@ -63,31 +58,26 @@ jobs:
           echo "branch=${{ github.ref_name }}" >> allure-results/environment.properties
           echo "runner=ubuntu-latest" >> allure-results/environment.properties
 
-      # 6️⃣ Запуск API smoke тестов
       - name: Run API smoke tests
         run: |
           pytest -m "smoke and api" -vv -ra \
                  --alluredir=allure-results \
                  --clean-alluredir
 
-      # 7️⃣ Пауза 3 минуты (капча)
       - name: Wait before UI tests
         run: sleep 180
 
-      # 8️⃣ Запуск UI smoke тестов
       - name: Run UI smoke tests
         run: |
           pytest -m "smoke and ui" -vv -ra \
                  --alluredir=allure-results
 
-      # 9️⃣ Проверяем наличие allure-results
       - name: Check allure-results content
         if: always()
         run: |
           echo "Checking allure-results folder:"
           ls -la allure-results || echo "❌ No allure-results directory found"
 
-      # 🔟 Загружаем "сырые" результаты
       - name: Upload Allure results (raw)
         if: always()
         uses: actions/upload-artifact@v4
@@ -96,7 +86,6 @@ jobs:
           path: allure-results
           if-no-files-found: warn
 
-      # 1️⃣1️⃣ Генерация HTML отчёта
       - name: Generate Allure HTML report
         if: always()
         run: |
@@ -104,7 +93,6 @@ jobs:
           allure generate allure-results -o allure-report --clean
           ls -la allure-report | head -n 30
 
-      # 1️⃣2️⃣ Публикация на GitHub Pages
       - name: Deploy Allure Report to GitHub Pages
         if: always() && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
@@ -114,7 +102,6 @@ jobs:
           publish_branch: gh-pages
           force_orphan: true
 
-      # 1️⃣3️⃣ Комментарий в PR со ссылкой
       - name: Comment report URL
         if: always()
         uses: marocchino/sticky-pull-request-comment@v2
@@ -142,23 +129,43 @@ jobs:
           pip install -r requirements.txt
           pip install telethon pytest allure-pytest
 
-      # 🔐 Восстанавливаем Telegram session из GitHub Secret
+      # 🔐 Restore Telegram session (B64 secret -> file)
       - name: Restore Telegram session
         run: |
           printf '%s' "${{ secrets.TG_SESSION_B64 }}" | base64 -d > chainscheck_qa_bot.session
           ls -la chainscheck_qa_bot.session
+          wc -c chainscheck_qa_bot.session
 
-      # 📁 Папка для отчетов
+      # ✅ ШАГ 1: ДЕБАГ авторизации (НЕ печатает секреты)
+      - name: Debug Telegram authorization
+        run: |
+          python3 - <<'PY'
+from pathlib import Path
+from telethon.sync import TelegramClient
+from Constants import Constants
+
+SESSION_FILE = "chainscheck_qa_bot.session"
+p = Path(SESSION_FILE)
+print("session_exists:", p.exists())
+print("session_size:", p.stat().st_size if p.exists() else None)
+
+client = TelegramClient("chainscheck_qa_bot", Constants.API_ID, Constants.API_HASH)
+client.connect()
+print("authorized:", client.is_user_authorized())
+if client.is_user_authorized():
+    me = client.get_me()
+    print("me:", me.id, me.username)
+client.disconnect()
+PY
+
       - name: Prepare allure-results
         run: rm -rf allure-results && mkdir -p allure-results
 
-      # ▶️ Запуск тестов Telegram Bot
       - name: Run bot tests
         run: |
           pytest -m "smoke and bot" -vv -ra \
                  --alluredir=allure-results
 
-      # 📦 Загружаем raw результаты в artifacts
       - name: Upload Bot Allure results
         if: always()
         uses: actions/upload-artifact@v4
@@ -167,14 +174,12 @@ jobs:
           path: allure-results
           if-no-files-found: warn
 
-      # 🖼 Генерируем HTML отчёт
       - name: Generate Bot HTML Report
         if: always()
         run: |
           npm install -g allure-commandline
           allure generate allure-results -o bot-report --clean
 
-      # 🌍 Публикуем на GitHub Pages (в подпапку /bot/)
       - name: Deploy Bot Report to GitHub Pages
         if: always() && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
@@ -185,7 +190,6 @@ jobs:
           destination_dir: bot
           force_orphan: false
 
-      # 💬 Комментарий в PR со ссылкой на визуальный отчёт
       - name: Comment bot report URL
         if: always()
         uses: marocchino/sticky-pull-request-comment@v2
