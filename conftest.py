@@ -302,18 +302,12 @@ def get_user_role(conn, email):
 """ПОДКЛЮЧЕНИЕ К Telegram"""
 @pytest.fixture(scope="session")
 def telegram_client():
-    client = TelegramClient(
-        SESSION_PATH,
-        Constants.API_ID,
-        Constants.API_HASH
-    )
+    sess = os.environ["TG_STRING_SESSION"]  # берём из GitHub Secrets
+    client = TelegramClient(StringSession(sess), Constants.API_ID, Constants.API_HASH)
     client.connect()
 
     if not client.is_user_authorized():
-        raise RuntimeError(
-            f"Telegram session is NOT authorized. "
-            f"Expected session at {SESSION_PATH}"
-        )
+        raise RuntimeError("Telegram StringSession is NOT authorized")
 
     yield client
     client.disconnect()
