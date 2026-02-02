@@ -140,21 +140,25 @@ jobs:
       - name: Debug Telegram authorization
         run: |
           python3 - <<'PY'
+          import hashlib
           from pathlib import Path
           from telethon.sync import TelegramClient
           from Constants import Constants
-          
+      
           SESSION_FILE = "chainscheck_qa_bot.session"
           p = Path(SESSION_FILE)
           print("session_exists:", p.exists())
           print("session_size:", p.stat().st_size if p.exists() else None)
-          
+      
+          # fingerprints (не секреты)
+          api_id = str(Constants.API_ID)
+          api_hash = str(Constants.API_HASH)
+          print("api_id_last3:", api_id[-3:])
+          print("api_hash_sha6:", hashlib.sha256(api_hash.encode()).hexdigest()[:6])
+      
           client = TelegramClient("chainscheck_qa_bot", Constants.API_ID, Constants.API_HASH)
           client.connect()
           print("authorized:", client.is_user_authorized())
-          if client.is_user_authorized():
-              me = client.get_me()
-              print("me:", me.id, me.username)
           client.disconnect()
           PY
 
