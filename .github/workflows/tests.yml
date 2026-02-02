@@ -140,23 +140,23 @@ jobs:
       - name: Debug Telegram authorization
         run: |
           python3 - <<'PY'
-from pathlib import Path
-from telethon.sync import TelegramClient
-from Constants import Constants
-
-SESSION_FILE = "chainscheck_qa_bot.session"
-p = Path(SESSION_FILE)
-print("session_exists:", p.exists())
-print("session_size:", p.stat().st_size if p.exists() else None)
-
-client = TelegramClient("chainscheck_qa_bot", Constants.API_ID, Constants.API_HASH)
-client.connect()
-print("authorized:", client.is_user_authorized())
-if client.is_user_authorized():
-    me = client.get_me()
-    print("me:", me.id, me.username)
-client.disconnect()
-PY
+          from pathlib import Path
+          from telethon.sync import TelegramClient
+          from Constants import Constants
+          
+          SESSION_FILE = "chainscheck_qa_bot.session"
+          p = Path(SESSION_FILE)
+          print("session_exists:", p.exists())
+          print("session_size:", p.stat().st_size if p.exists() else None)
+          
+          client = TelegramClient("chainscheck_qa_bot", Constants.API_ID, Constants.API_HASH)
+          client.connect()
+          print("authorized:", client.is_user_authorized())
+          if client.is_user_authorized():
+              me = client.get_me()
+              print("me:", me.id, me.username)
+          client.disconnect()
+          PY
 
       - name: Prepare allure-results
         run: rm -rf allure-results && mkdir -p allure-results
