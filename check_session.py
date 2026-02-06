@@ -1,7 +1,7 @@
 import asyncio
 from telethon import TelegramClient
 
-from Constants import Constants  # или твой правильный путь
+from Constants import Constants
 
 async def main():
     client = TelegramClient("chainscheck_qa_bot", Constants.API_ID, Constants.API_HASH)
