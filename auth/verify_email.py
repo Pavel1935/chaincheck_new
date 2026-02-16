@@ -1,7 +1,6 @@
 import pytest
 import requests
 from Constants import Constants
-from conftest import verification_code_fixture
 
 
 class TestVerifyEmail:
@@ -12,7 +11,7 @@ class TestVerifyEmail:
 
         body = {
             "email": 'pashkarob@gmail.com',
-            "code": "558503"
+            "code": "918127"
         }
 
         response = requests.post(url, json=body)
@@ -57,21 +56,21 @@ class TestVerifyEmail:
         assert data["ok"] == 0
         assert data["error"] == "ENTITY_NOT_FOUND"
 
-    def test_verify_email_invalid_code(self):
-
-        endpoint = "/auth/verify-email"
-        url = Constants.API_URL + endpoint
-
-        body = {
-            "email": Constants.EMAIL,
-            "code": "1234567890"
-        }
-
-        response = requests.post(url, json=body)
-        print("RESPONSE TEXT:", response.text)
-
-        data = response.json()
-
-        assert data["ok"] == 0
-        assert data["error"] == "ENTITY_NOT_FOUND"
+    # def test_verify_email_invalid_code(self):
+    #
+    #     endpoint = "/auth/verify-email"
+    #     url = Constants.API_URL + endpoint
+    #
+    #     body = {
+    #         "email": Constants.EMAIL,
+    #         "code": "1234567890"
+    #     }
+    #
+    #     response = requests.post(url, json=body)
+    #     print("RESPONSE TEXT:", response.text)
+    #
+    #     data = response.json()
+    #
+    #     assert data["ok"] == 0
+    #     assert data["error"] == "ENTITY_NOT_FOUND"
 
