@@ -9,7 +9,7 @@ REDIS_KEY_MOC = "ea:pashkarob@gmail.com"
 
 def get_redis_connection():
     return redis.Redis(
-        host="167.235.223.2",
+        host="168.119.141.47",
         port=57379,
         password="teuneedap3ju",
         db=0,
