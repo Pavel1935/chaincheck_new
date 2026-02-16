@@ -4,6 +4,8 @@ import time
 from redis_utils import get_verification_code
 import logging
 import os
+from telethon.sync import TelegramClient
+from telethon.sessions import StringSession
 import pytest
 from playwright.sync_api import sync_playwright
 from pages.login_page import LoginPage
