@@ -1,0 +1,3 @@
+RESPONSE TEXT: {"ok":1,"result":{"report_id":"3781bc07-e927-443e-9eff-1a138c4ba58c"}}
+RESPONSE TEXT: {"error":"BAD_REQUEST","ok":0}
+

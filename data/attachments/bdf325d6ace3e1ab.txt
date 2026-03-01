@@ -1,0 +1,1 @@
+INFO     conftest:conftest.py:41 [TOKENS] Выполняю логин для всей сессии

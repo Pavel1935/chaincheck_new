@@ -1,0 +1,2 @@
+2026-03-01 06:53:54.476 | INFO     | tests.test_smoke:test_check_smoke_tron_ok:123 - Начинаю тест: проверка адреса в сети TRON
+2026-03-01 06:53:58.307 | INFO     | tests.test_smoke:test_check_smoke_tron_ok:151 - Проверяю результат
