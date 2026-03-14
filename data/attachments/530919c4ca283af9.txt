@@ -1,0 +1,2 @@
+2026-03-14 05:38:57.791 | INFO     | tests.test_smoke:test_smoke_negative_api_old_access_token:190 - Начинаю тест: протухшего access_token
+2026-03-14 05:38:59.724 | INFO     | tests.test_smoke:test_smoke_negative_api_old_access_token:216 - Проверяю результат
