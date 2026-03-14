@@ -1,0 +1,33 @@
+
+Ответ бота:
+🔎 **Отчет** для адреса
+**BSC**: 0x36b12020B741A722Ca21a0ef2B9E8977f8715b4f
+
+Общий уровень риска низкий:
+✅ 10 / 100 
+
+💎 Ваш кошелек безопасен!
+ Вы можете смело отправлять средства куда угодно — мосты, биржи и платформы примут ваши транзакции без проблем. 🌟
+ Нет никаких опасений и ограничений! 🚀
+
+Подробный отчет:
+
+✅ Низкий риск:
+•  stolen: 4.3
+•  risk p2p exchange: 3.1
+•  exchange: 2.5
+•  dark service: < 1
+
+Взаимодействовал с: Bybit, Binance, Multichain, Defiway, Binance Charity, EVODeFi, PancakeSwap, Uniswap
+
+Теги:
+•  pancakeswap
+•  uniswap
+
+Приход: $8 004.91
+Расход: $1 277.68
+Баланс: $20.67
+
+----------
+Проверено: chainscheck.com
+ChainsCheck Bot t.me/chainscheck_bot?start=share
