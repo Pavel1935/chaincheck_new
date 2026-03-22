@@ -1,0 +1,3 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","4398","test_balance_button","tests","2026-03-22","passed","2026-03-22","TestChainsCheckBotSync","test_bot_AML","",""
+"","4064","test_get_score","tests","2026-03-22","passed","2026-03-22","TestChainsCheckBotSync","test_bot_AML","",""

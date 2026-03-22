@@ -1,0 +1,1 @@
+[{"uid":"94c3b215cb8de179","name":"test_balance_button","time":{"start":1774158601364,"stop":1774158605762,"duration":4398},"status":"passed","severity":"normal"},{"uid":"4a82d6f0429e4fc7","name":"test_get_score","time":{"start":1774158605764,"stop":1774158609828,"duration":4064},"status":"passed","severity":"normal"}]
