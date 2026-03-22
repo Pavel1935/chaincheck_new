@@ -1,0 +1,5 @@
+2026-03-22 05:49:00,587 - INFO - Запуск Playwright и браузера
+2026-03-22 05:49:01,128 - INFO - Создание объекта LoginPage
+2026-03-22 05:49:01.130 | INFO     | tests.test_smoke:test_email_login_ui:224 - Начинаю тест: вход по email
+2026-03-22 05:49:22.247 | INFO     | tests.test_smoke:test_email_login_ui:233 - Проверяю результат
+2026-03-22 05:49:22,249 - INFO - Закрытие браузера
